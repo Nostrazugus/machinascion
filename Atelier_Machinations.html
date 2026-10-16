@@ -147,6 +147,10 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
 .qhelp{margin-left:auto;width:22px;height:22px;border-radius:50%;border:1px solid var(--line2);background:var(--node);color:var(--muted);font-weight:700;font-size:12px;padding:0;flex:none}
 .qhelp:hover{border-color:var(--accent);color:var(--accent)}
 #canvas.nodrop{cursor:not-allowed}
+.orderrow{display:flex;align-items:center;gap:4px;margin-bottom:6px}
+.orderrow .rank{font:700 18px var(--mono);margin-right:auto}
+.orderrow .rank small{font-size:12px;color:var(--muted);font-weight:500}
+.orderrow .btn{border-color:var(--line);padding:3px 7px;font-size:12px}
 /* ---- fiches d'aide de la palette ---- */
 .ptip{position:fixed;z-index:60;width:280px;background:var(--panel);border:1px solid var(--line2);border-radius:10px;box-shadow:var(--shadow);padding:10px 12px 11px;font-size:12.5px;line-height:1.45;pointer-events:none;opacity:0;transform:translateX(-4px);transition:opacity .12s,transform .12s;--ay:20px}
 .ptip.on{opacity:1;transform:none}
@@ -308,6 +312,9 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
 .dropbad .sh,.dropbad .ln{stroke:var(--danger)!important;stroke-width:3}
 .tmp.bad{stroke:var(--danger)}
 .tmptip{fill:var(--danger);font:600 12px var(--sans);paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.rankbadge rect{fill:var(--ink)}
+.rankbadge text{fill:var(--paper);font:700 10px var(--mono);text-anchor:middle;dominant-baseline:central}
+.rankbadge.idle{opacity:.35}
 .tmp{stroke:var(--accent);stroke-width:2;stroke-dasharray:4 3;fill:none;pointer-events:none}
 .marq{fill:var(--sel-soft);stroke:var(--sel);stroke-dasharray:4 3;pointer-events:none}
 .droptarget .sh,.droptarget .ln{stroke:var(--accent)!important;stroke-width:3}
@@ -655,11 +662,19 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
   <h3 id="doc-sim-step">Déroulement d'un pas</h3>
   <ol>
     <li>Les délais et files libèrent ce qui arrive à échéance (et leurs déclencheurs partent).</li>
-    <li>Les nœuds actifs (Auto, Interactifs cliqués, Démarrage au pas 1) agissent un par un, dans un <b>ordre tiré au hasard</b> à chaque pas. Un nœud bloqué par un activateur ne fait rien.</li>
+    <li>Les nœuds actifs (Auto, Interactifs cliqués, Démarrage au pas 1) agissent un par un, dans l'<b>ordre des actions</b> choisi (voir ci-dessous). Un nœud bloqué par un activateur ne fait rien.</li>
     <li>Les déclencheurs font agir leurs cibles dans le même pas ; chaque nœud agit au plus une fois par pas.</li>
     <li>Les modificateurs de nœud s'appliquent, puis les registres recalculent leur formule.</li>
     <li>Les conditions de fin sont vérifiées ; la limite de pas termine la partie si aucune fin n'est atteinte.</li>
   </ol>
+  <h3 id="doc-sim-order">Ordre des actions</h3>
+  <p>Dans un pas, les nœuds actifs agissent l'un après l'autre. L'ordre compte dès que deux nœuds se disputent les mêmes ressources : celui qui agit en premier se sert d'abord. Le réglage se trouve dans l'inspecteur du diagramme (rien de sélectionné), section Simulation.</p>
+  <table>
+    <tr><td>Ordre de création</td><td>Par défaut. Les nœuds agissent toujours dans le même ordre, celui dans lequel ils ont été créés. Le <b>rang d'action</b> de chaque nœud s'affiche dans son inspecteur, avec des boutons pour le faire agir plus tôt ou plus tard. L'option « Afficher le rang d'action sur les nœuds » ajoute un petit numéro sur le canevas (grisé pour un nœud passif, qui n'agit pas de lui-même). Un nœud collé ou dupliqué prend le dernier rang.</td></tr>
+    <tr><td>Aléatoire</td><td>L'ordre est tiré au hasard à chaque pas : aucun nœud n'est avantagé de façon systématique. Plus proche du « tout en même temps » de Machinations, mais ajoute de la variance aux résultats.</td></tr>
+  </table>
+  <p class="ex"><b>Exemple</b> : un réservoir « Or » de 5 est vidé par « Entretien » (3) et « Recrutement » (3). En ordre de création, si Entretien a le rang 1, il prend 3 et Recrutement n'obtient que 2 (✕) à chaque pas. En aléatoire, chacun gagne une fois sur deux.</p>
+  <p>Les déclencheurs <code>*</code> agissent ensuite, dans l'ordre où ils ont été déclenchés.</p>
   <h3 id="doc-sim-read">Lire la simulation</h3>
   <ul>
     <li>Les nombres dans les nœuds sont leurs valeurs ; l'inspecteur les liste, et le graphique du bas suit les nœuds cochés « Suivre dans les graphiques ».</li>
@@ -800,7 +815,7 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
   <h3 id="doc-faq-5">Ma fin ne se déclenche pas</h3>
   <p>Elle a besoin d'une connexion d'état : une condition (<code>&gt;=10</code>) depuis le nœud surveillé, ou un déclencheur <code>*</code>. Avec plusieurs conditions, il faut qu'elles soient <b>toutes</b> vraies.</p>
   <h3 id="doc-faq-6">Mes résultats changent d'une simulation à l'autre</h3>
-  <p>C'est voulu dès qu'il y a de l'aléa (dés, %, portes aléatoires, joueur simulé, ordre des actions). Utilise le mode Statistiques pour raisonner sur des moyennes.</p>
+  <p>C'est voulu dès qu'il y a de l'aléa (dés, %, portes aléatoires, joueur simulé, ordre des actions s'il est réglé sur « Aléatoire »). Utilise le mode Statistiques pour raisonner sur des moyennes.</p>
   <h3 id="doc-faq-7">Une formule fait référence au mauvais nœud</h3>
   <p>Deux nœuds ont le même nom (avertissement). Renomme l'un d'eux.</p>
   <h3 id="doc-faq-8">J'ai perdu mon diagramme</h3>
@@ -811,7 +826,7 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
   <h2>Différences avec le Machinations d'origine</h2>
   <p>L'outil reprend les concepts du livre et de machinations.io mais en simplifie certains points. Si tu modélises d'après le livre, garde-les en tête :</p>
   <ul>
-    <li><b>Ordre des actions</b> : dans un pas, les nœuds actifs agissent l'un après l'autre dans un ordre aléatoire, et non strictement en même temps.</li>
+    <li><b>Ordre des actions</b> : dans un pas, les nœuds actifs agissent l'un après l'autre (par ordre de création, ou dans un ordre aléatoire selon le réglage), et non strictement en même temps.</li>
     <li><b>Durée des délais</b> : réglée sur le nœud, pas sur l'étiquette de la connexion de sortie.</li>
     <li><b>Déclencheurs depuis un nœud passif</b> : un nœud passif qui reçoit des ressources déclenche ses <code>*</code>.</li>
     <li><b>Activateurs</b> : un nœud bloqué peut toujours recevoir des ressources ; il ne peut simplement pas agir.</li>
@@ -986,6 +1001,7 @@ const Engine = (() => {
   /* ---------- Simulation ---------- */
   function createSim(D, opts = {}) {
     const seed = opts.seed ?? ((Math.random() * 4294967296) >>> 0);
+    const order = opts.order || (D.settings && D.settings.order) || 'creation';
     const rng = mulberry32(seed);
     const types = (D.resourceTypes && D.resourceTypes.length) ? D.resourceTypes : [{ id: 'r', name: 'Ressource', color: '#64748b' }];
     const typeIds = new Set(types.map(t => t.id));
@@ -1375,7 +1391,7 @@ const Engine = (() => {
         }
         if (act) start.push(n);
       }
-      shuffle(start);
+      if (order === 'random') shuffle(start);
       // délais et files : leurs déclencheurs partent quand une ressource SORT
       for (const id of S.emitted) queueTriggers(id, true, start);
       let wave = start; const done = new Set(), recTrig = new Set();
@@ -1472,7 +1488,7 @@ const EXAMPLES = (() => {
   const T = [{ id: 'r', name: 'Ressource', color: '#64748b' }];
   const base = (name, notes, nodes, edges, vars = [], types = T) => ({
     version: 1, name, notes, nodes, edges, vars, resourceTypes: JSON.parse(JSON.stringify(types)),
-    settings: { maxSteps: 100, runs: 200 },
+    settings: { maxSteps: 100, runs: 200, order: 'creation', showOrder: false },
   });
   const N = (id, type, name, x, y, extra = {}) => Object.assign({ id, type, name, x, y, mode: 'passive', aiProb: 50 }, extra);
   const Er = (id, from, to, label = '', extra = {}) => Object.assign({ id, kind: 'resource', from, to, label, rtype: '' }, extra);
@@ -1501,16 +1517,16 @@ const EXAMPLES = (() => {
     survivor: {
       title: 'Survivor-like (vagues, XP, niveaux)',
       build: () => base('Survivor-like',
-        'Les ennemis arrivent par vagues croissantes. La puissance (1 + niveaux) détermine combien on en tue par pas. Chaque tiers d\'ennemi présent inflige 1 dégât.',
+        'Les ennemis arrivent par vagues croissantes. La puissance (1 + niveaux) détermine combien on en tue par pas. Chaque tiers d\'ennemi présent inflige 1 dégât. Ordre des actions : les Dégâts (rang 3) frappent avant que l\'XP ne récolte les ennemis tués (rang 4).',
         [
           N('spawn', 'source', 'Apparition', 100, 140, { mode: 'auto', rtype: '' }),
           N('enn', 'pool', 'Ennemis', 300, 140, { flow: 'pull', all: false, start: 0, capacity: '', rtype: '', track: true }),
+          N('dmg', 'drain', 'Dégâts', 100, 440, { mode: 'auto', all: false, track: false }),
           N('xp', 'pool', 'XP', 500, 140, { mode: 'auto', flow: 'pull', all: false, start: 0, capacity: '', rtype: '', track: true }),
           N('lvl', 'converter', 'Montée de niveau', 500, 300, { mode: 'auto', rtype: '', track: false }),
           N('niv', 'pool', 'Niveaux', 700, 300, { flow: 'pull', all: false, start: 0, capacity: '', rtype: '', track: true }),
           N('pui', 'register', 'Puissance', 700, 140, { formula: '1+Niveaux', start: 1, interactive: false, min: '', max: '', track: true }),
           N('pv', 'pool', 'PV', 300, 440, { flow: 'pull', all: false, start: 30, capacity: 30, rtype: '', track: true }),
-          N('dmg', 'drain', 'Dégâts', 100, 440, { mode: 'auto', all: false, track: false }),
           N('regen', 'source', 'Régénération', 500, 440, { mode: 'auto', rtype: '' }),
           N('lose', 'end', 'Défaite', 300, 580, {}),
           N('tps', 'register', 'Temps', 700, 580, { formula: 't', start: 0, interactive: false, min: '', max: '', track: false }),
@@ -1519,14 +1535,14 @@ const EXAMPLES = (() => {
         [
           Er('a1', 'spawn', 'enn', 'vague'),
           Er('a2', 'enn', 'xp', 'Puissance'),
-          Er('a3', 'xp', 'lvl', '3+3*Niveaux'),
+          Er('a3', 'xp', 'lvl', '3+2*Niveaux'),
           Er('a4', 'lvl', 'niv', '1'),
           Er('a5', 'pv', 'dmg', 'floor(Ennemis/3)'),
-          Er('a6', 'regen', 'pv', '50%'),
+          Er('a6', 'regen', 'pv', '53%'),
           Es('a7', 'pv', 'lose', '<=0'),
           Es('a8', 'tps', 'surv', '>=60'),
         ],
-        [{ name: 'vague', expr: '1+floor(t/7)' }]),
+        [{ name: 'vague', expr: '1+floor(t/10)' }]),
     },
     butin: {
       title: 'Butin : porte aléatoire et file d\'attente',
@@ -1598,14 +1614,14 @@ const typeColor = t => (D.resourceTypes.find(r => r.id === t) || {}).color;
 const fmt = v => { if (v == null || !isFinite(v)) return '–'; if (Math.abs(v) >= 100000) return (v / 1000).toFixed(0) + 'k'; if (Math.abs(v) >= 10000) return (v / 1000).toFixed(1) + 'k'; return Number.isInteger(v) ? String(v) : (Math.round(v * 100) / 100).toString(); };
 
 function newDiagram() {
-  return { version: 1, name: 'Sans titre', notes: '', nodes: [], edges: [], vars: [], resourceTypes: [{ id: 'r', name: 'Ressource', color: '#64748b' }], settings: { maxSteps: 100, runs: 200 } };
+  return { version: 1, name: 'Sans titre', notes: '', nodes: [], edges: [], vars: [], resourceTypes: [{ id: 'r', name: 'Ressource', color: '#64748b' }], settings: { maxSteps: 100, runs: 200, order: 'creation', showOrder: false } };
 }
 function normalize(d) {
   const b = newDiagram();
   d = Object.assign(b, d || {});
   d.nodes = (d.nodes || []).filter(n => n && TYPES[n.type]).map(n => Object.assign(defaults(n.type), n));
   d.edges = (d.edges || []).filter(e => e && e.from && e.to).map(e => Object.assign({ kind: 'resource', label: '', rtype: '' }, e));
-  d.vars = d.vars || []; d.settings = Object.assign({ maxSteps: 100, runs: 200 }, d.settings || {});
+  d.vars = d.vars || []; d.settings = Object.assign({ maxSteps: 100, runs: 200, order: 'creation', showOrder: false }, d.settings || {});
   if (!d.resourceTypes || !d.resourceTypes.length) d.resourceTypes = b.resourceTypes;
   return d;
 }
@@ -1920,6 +1936,10 @@ function nodeSVG(n, simErr) {
   if (n.type === 'pool' && n.flow === 'push') b += 'p';
   if (n.all && ['pool', 'drain', 'gate', 'delay', 'queue'].includes(n.type)) b += '&';
   if (b) g += `<text class="bd" x="${R * .92}" y="${-R * .88}">${esc(b)}</text>`;
+  if (D.settings.showOrder && D.settings.order !== 'random' && HAS_MODE.has(n.type)) {
+    const r = actionOrder().indexOf(n) + 1, act = n.mode !== 'passive';
+    g += `<g class="rankbadge${act ? '' : ' idle'}" transform="translate(${-R * 1.05 - (mode !== 'sim' && (staticErrors.has(n.id) || staticWarnings.has(n.id)) ? 20 : 0) - (n.mode === 'interactive' ? 4 : 0)},${-R * 1.05 - (n.mode === 'interactive' ? 4 : 0)})"><rect x="-9" y="-8" width="18" height="16" rx="8"/><text>${r}</text></g>`;
+  }
   // nom
   let name = n.name || '';
   if (n.type === 'pool' && n.capacity !== '' && n.capacity != null && !isNaN(+n.capacity)) name += ' (≤' + n.capacity + ')';
@@ -2390,8 +2410,26 @@ function nodeInspector(n) {
     h += chk('interactive', n.interactive, 'Interactif (clic = +1, Maj+clic = −1 en simulation)');
   }
   if (t === 'end') h += `<div class="note">Relie un nœud à cette fin par une connexion d'état avec une condition (<code>&gt;=10</code>, <code>&lt;=0</code>…) ou un déclencheur <code>*</code>.</div>`;
+  if (HAS_MODE.has(t)) {
+    const list = actionOrder(), i = list.indexOf(n), last = list.length - 1;
+    h += `<h5>Rang d'action${helpLink('sim-order')}</h5><div class="orderrow"><span class="rank">${i + 1}<small> / ${list.length}</small></span>`
+      + `<button class="btn" data-act="ordFirst" ${i === 0 ? 'disabled' : ''} title="En premier">⇤</button><button class="btn" data-act="ordUp" ${i === 0 ? 'disabled' : ''} title="Agir plus tôt">← Plus tôt</button>`
+      + `<button class="btn" data-act="ordDown" ${i === last ? 'disabled' : ''} title="Agir plus tard">Plus tard →</button><button class="btn" data-act="ordLast" ${i === last ? 'disabled' : ''} title="En dernier">⇥</button></div>`
+      + `<div class="desc muted" style="font-size:11.5px;margin:-2px 0 4px">${D.settings.order === 'random' ? 'Ignoré tant que l\'ordre des actions du diagramme est « Aléatoire ».' : 'Dans un pas, ce nœud agit après ceux de rang inférieur. Ne compte que s\'il est actif (Auto, Interactif, Démarrage).'}</div>`;
+  }
   if (TRACKABLE.has(t)) h += `<h5>Graphiques</h5>` + chk('track', n.track, 'Suivre dans les graphiques et statistiques');
   return h + footerBtns();
+}
+function actionOrder() { return D.nodes.filter(n => HAS_MODE.has(n.type)); }
+function moveInOrder(n, where) {
+  const list = actionOrder(), i = list.indexOf(n);
+  const target = where === 'first' ? list[0] : where === 'last' ? list[list.length - 1] : where === 'up' ? list[i - 1] : list[i + 1];
+  if (!target || target === n) return;
+  mutate(() => {
+    D.nodes.splice(D.nodes.indexOf(n), 1);
+    const j = D.nodes.indexOf(target);
+    D.nodes.splice(where === 'up' || where === 'first' ? j : j + 1, 0, n);
+  });
 }
 const refName = name => /^[\p{L}_][\p{L}\p{N}_]*$/u.test(String(name || '').trim()) ? String(name).trim() : '[' + String(name || '').trim() + ']';
 const footerBtns = () => `<div class="grid2" style="margin-top:16px"><button class="btn" data-act="dup" style="border-color:var(--line)">Dupliquer</button><button class="btn danger" data-act="del" style="border-color:var(--line)">Supprimer</button></div>`;
@@ -2445,7 +2483,11 @@ function diagramInspector() {
   });
   h += `<button class="add" data-act="addVar">+ Variable</button>`;
   h += `<div class="desc muted" style="font-size:11.5px;margin-top:4px">Utilisables dans toutes les étiquettes et formules, ex. <code>vague = 1 + floor(t/10)</code>.</div>`;
-  h += `<h5>Simulation</h5><div class="grid2">` + field('Pas maximum', `<input type="number" data-k="d.settings.maxSteps" data-num min="1" value="${D.settings.maxSteps}">`) + field('Runs (stats)', `<input type="number" data-k="d.settings.runs" data-num min="1" max="10000" value="${D.settings.runs}">`) + `</div>`;
+  h += `<h5>Simulation${helpLink('sim-order')}</h5>`;
+  h += field('Ordre des actions dans un pas', seg('d.settings.order', D.settings.order || 'creation', [['creation', 'Ordre de création'], ['random', 'Aléatoire']]),
+    D.settings.order === 'random' ? 'Les nœuds actifs agissent dans un ordre tiré au hasard à chaque pas : aucun n\'est avantagé.' : 'Les nœuds actifs agissent toujours dans le même ordre : celui de leur création, modifiable dans l\'inspecteur de chaque nœud.');
+  h += chk('d.settings.showOrder', D.settings.showOrder, 'Afficher le rang d\'action sur les nœuds');
+  h += `<div class="grid2">` + field('Pas maximum', `<input type="number" data-k="d.settings.maxSteps" data-num min="1" value="${D.settings.maxSteps}">`) + field('Runs (stats)', `<input type="number" data-k="d.settings.runs" data-num min="1" max="10000" value="${D.settings.runs}">`) + `</div>`;
   h += `<h5>Mémo des étiquettes</h5><dl class="cheat">
     <dt>3 · 2.5 · 30% · D6 · 1..4 · tout</dt><dd>Débits : fixe, moyen, probable, dés, plage, tout</dd>
     <dt>Or/2 · [Points de vie] · t</dt><dd>Formules avec noms de nœuds, variables, pas courant</dd>
@@ -2518,6 +2560,7 @@ insp.addEventListener('click', ev => {
   switch (act) {
     case 'del': deleteSel(); break;
     case 'dup': { const s0 = snapshot(); duplicate([...sel]); pushUndo(s0); changed(); break; }
+    case 'ordFirst': case 'ordUp': case 'ordDown': case 'ordLast': { const n = nodeById([...sel][0]); if (n) moveInOrder(n, { ordFirst: 'first', ordUp: 'up', ordDown: 'down', ordLast: 'last' }[act]); break; }
     case 'reverse': { const e = edgeById([...sel][0]); mutate(() => { [e.from, e.to] = [e.to, e.from]; if (e.bend) e.bend = { dx: -e.bend.dx, dy: -e.bend.dy }; }); break; }
     case 'straight': { const e = edgeById([...sel][0]); mutate(() => { delete e.bend; }); break; }
     case 'addType': mutate(() => { const i = D.resourceTypes.length; D.resourceTypes.push({ id: uid('t'), name: 'Type ' + (i + 1), color: PALETTE[i % PALETTE.length] }); }); break;
