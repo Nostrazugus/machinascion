@@ -612,7 +612,7 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
     <li>Nom avec espaces : entre crochets <code>[Points de vie]</code>, ou avec des tirets bas <code>points_de_vie</code>. L'inspecteur indique la forme à utiliser.</li>
     <li><code>t</code> (ou <code>pas</code>) : le numéro du pas courant.</li>
     <li>Les <b>variables</b> du diagramme (inspecteur, rien de sélectionné) : <code>vague = 1 + floor(t/7)</code>, puis <code>vague</code> dans n'importe quelle étiquette. Une variable peut utiliser d'autres variables (pas de boucle).</li>
-    <li>Deux nœuds portant le même nom rendent la référence ambiguë : avertissement.</li>
+    <li>Deux nœuds portant le même nom rendent la référence ambiguë : avertissement. Si une variable porte le nom d'un nœud, c'est le <b>nœud</b> qui l'emporte (avertissement également).</li>
   </ul>
   <h3 id="doc-ops">Opérateurs</h3>
   <p><code>+ - * / ^</code> et parenthèses, avec les priorités usuelles. Une division par zéro vaut 0.</p>
@@ -1829,6 +1829,11 @@ function computeWarnings() {
       if (ls.length && ls.every(l => /%/.test(l))) { let sum = 0; ls.forEach(l => { const v = parseFloat(l); if (!isNaN(v)) sum += v; }); if (sum > 100.0001) addWarn(n.id, 'Les pourcentages des sorties totalisent ' + sum + ' % : ils seront ramenés à 100 %.'); }
     }
   }
+  D.vars.forEach((v, i) => {
+    if (!v.name) return;
+    const k = Engine.norm(v.name), n = D.nodes.find(x => x.type !== 'text' && x.name && Engine.norm(x.name) === k);
+    if (n) addWarn('var:' + i, 'La variable « ' + v.name + ' » porte le même nom que le nœud « ' + n.name + ' » : dans les formules, c\'est le nœud qui sera utilisé. Renomme l\'un des deux.');
+  });
   for (const e of D.edges) {
     if (e.kind !== 'resource') continue;
     const s = nodeById(e.from), l = String(e.label ?? '').trim();
@@ -2478,7 +2483,7 @@ function diagramInspector() {
   if (D.resourceTypes.length === 1) h += `<div class="desc muted" style="font-size:11.5px;margin-top:4px">Ajoute des types (or, bois, mana…) pour filtrer les connexions par couleur.</div>`;
   h += `<h5>Variables</h5>`;
   D.vars.forEach((v, i) => {
-    const err = staticErrors.get('var:' + i);
+    const err = staticErrors.get('var:' + i) || (staticWarnings.get('var:' + i) || [])[0];
     h += `<div class="row"><input type="text" class="code vname" data-list="vars" data-i="${i}" data-lk="name" value="${esc(v.name)}" placeholder="nom"><span>=</span><input type="text" class="code" data-list="vars" data-i="${i}" data-lk="expr" value="${esc(v.expr)}" placeholder="expression"><button class="x" data-act="delVar" data-i="${i}" title="Supprimer">✕</button></div>${err ? `<div class="desc err" style="font-size:11.5px;margin:-3px 0 6px">${esc(err)}</div>` : ''}`;
   });
   h += `<button class="add" data-act="addVar">+ Variable</button>`;
