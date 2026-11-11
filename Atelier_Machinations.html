@@ -151,6 +151,38 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
 .orderrow .rank{font:700 18px var(--mono);margin-right:auto}
 .orderrow .rank small{font-size:12px;color:var(--muted);font-weight:500}
 .orderrow .btn{border-color:var(--line);padding:3px 7px;font-size:12px}
+.swatches{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.swatch{width:18px;height:18px;border-radius:50%;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--line2);padding:0;font-size:11px;line-height:1;color:var(--muted);background:var(--node)}
+.swatch.on{box-shadow:0 0 0 2px var(--sel)}
+.swatch:hover{transform:scale(1.12)}
+.swatch-custom{width:20px;height:20px;padding:0;border:1px dashed var(--line2);border-radius:50%;background:none;cursor:pointer}
+.vals tr.sub td{font-size:11.5px;padding:2px 2px 2px 18px;border-bottom:1px dashed var(--line)}
+.tdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.mixrows{display:flex;flex-direction:column;gap:5px;margin-bottom:8px}
+.mixrow{display:flex;align-items:center;gap:6px}
+.mixrow .mixname{flex:1;font-size:12.5px}
+.mixrow input{width:80px;border:1px solid var(--line);background:var(--node);border-radius:6px;padding:4px 7px;outline:none}
+.mixrow input:focus{border-color:var(--sel);box-shadow:0 0 0 3px var(--sel-soft)}
+.palghost{position:fixed;z-index:200;pointer-events:none;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;opacity:.85;filter:drop-shadow(0 4px 10px rgba(0,0,0,.18))}
+.palghost span{font-size:11px;background:var(--ink);color:var(--paper);border-radius:99px;padding:1px 8px;white-space:nowrap}
+.palghost.out{opacity:.4}
+.palghost .sh{fill:var(--node);stroke:var(--accent);stroke-width:2}
+.palghost .sh.solid{fill:var(--accent)}
+.palghost .sh.thin{fill:none;stroke-width:1.5}
+.tool{touch-action:none}
+.modal .box.keysbox{width:min(640px,94vw);max-height:88vh;padding:0;display:flex;flex-direction:column;overflow:hidden}
+.keysbody{overflow:auto;padding:12px 18px 18px}
+table.keys{width:100%;border-collapse:collapse}
+table.keys td{padding:4px 6px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}
+.modal table.keys td:first-child{font-family:var(--sans);white-space:normal}
+table.keys td:nth-child(2){width:190px}
+table.keys td:nth-child(3){width:60px;text-align:right;white-space:nowrap}
+table.keys tr.kgroup td{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-top:14px;border-bottom:1px solid var(--line2)}
+.kbtn{min-width:120px;border:1px solid var(--line);background:var(--node);border-radius:6px;padding:3px 8px;text-align:left}
+.kbtn:hover{border-color:var(--accent)}
+.kbtn.kempty{color:var(--muted);font-style:italic}
+.kbtn.capturing{border-color:var(--accent);background:var(--accent-soft);color:var(--ink);font-style:normal;animation:pulseK 1s infinite}
+@keyframes pulseK{50%{box-shadow:0 0 0 3px var(--accent-soft)}}
 /* ---- fiches d'aide de la palette ---- */
 .ptip{position:fixed;z-index:60;width:280px;background:var(--panel);border:1px solid var(--line2);border-radius:10px;box-shadow:var(--shadow);padding:10px 12px 11px;font-size:12.5px;line-height:1.45;pointer-events:none;opacity:0;transform:translateX(-4px);transition:opacity .12s,transform .12s;--ay:20px}
 .ptip.on{opacity:1;transform:none}
@@ -191,7 +223,7 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
 .modal .doccontent td:first-child{white-space:nowrap;font-weight:600;font-family:var(--sans);width:1%}
 .modal .doccontent table.syntax td:first-child{font-family:var(--mono);font-weight:500;font-size:12.3px}
 .doccontent p.ex{background:var(--panel2);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:6px 10px}
-.doccontent a[data-goto-doc]{color:var(--accent);cursor:pointer;text-decoration:underline}
+.doccontent a[data-open-keys],.doccontent a[data-goto-doc]{color:var(--accent);cursor:pointer;text-decoration:underline}
 .doccontent [hidden]{display:none!important}
 .doccontent mark{background:#fde68a;color:inherit;border-radius:2px}
 .sw-x,.sw-w{display:inline-flex;width:16px;height:16px;border-radius:50%;color:#fff;font-size:10px;font-weight:800;align-items:center;justify-content:center;margin-right:4px}
@@ -262,24 +294,35 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
 </style>
 <style id="canvas-css">
 .sh{fill:var(--node);stroke:var(--ink);stroke-width:2}
+.node.colored .sh:not(.solid){stroke:var(--nc)}
+.node.colored .sh.solid{fill:var(--nc)}
+.node.colored .sh:not(.outer):not(.thin):not(.solid){fill:color-mix(in srgb,var(--nc) 13%,var(--node))}
+.node.colored .nm{fill:var(--nc)}
+.node.colored .note{fill:var(--nc)}
+.node.filled .sh:not(.outer):not(.thin):not(.solid){fill:var(--nf)}
+.node.darkfill .val{fill:#fff}
+.node.darkfill .val.halo{fill:var(--ink)}
+.val.halo{paint-order:stroke;stroke:var(--node);stroke-width:3.5px;stroke-linejoin:round}
+.dynfill{pointer-events:none}
+.dynlevel{stroke:var(--ink);stroke-width:1;opacity:.4;stroke-dasharray:3 2;pointer-events:none}
 .sh.outer{fill:none;stroke-width:1.4}
 .sh.solid{fill:var(--ink);stroke:none}
 .sh.thin{fill:none;stroke-width:1.5}
 .node .val{fill:var(--ink);font:600 13px var(--sans);text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .node .val.dim{fill:var(--muted);font-weight:500}
 .node .val.small{font-size:11px}
-.node .nm{fill:var(--ink);font:12px var(--sans);text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.node .nm{fill:var(--ink);font:12px var(--sans);text-anchor:middle;pointer-events:auto;cursor:move;paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
 .node .bd{fill:var(--accent);font:700 11px var(--mono);pointer-events:none}
 .node .note{fill:var(--muted);font-family:var(--sans);font-style:italic}
 .node .hitbox{fill:transparent;stroke:none}
 .node.sel .sh:not(.solid){stroke:var(--sel)}
 .node.sel .halo{fill:var(--sel-soft);stroke:none}
 .node.sel .note{fill:var(--sel)}
-.node.pending .sh{stroke:var(--accent);stroke-width:3}
+.node.pending .sh:not(.solid){stroke:var(--accent);stroke-width:3}
 .node.clickable{cursor:pointer}
 .node.clickable:hover .sh{stroke:var(--accent)}
-.node.err .sh{stroke:var(--danger)}
-.node.active .sh{stroke:var(--accent)}
+.node.err .sh:not(.solid){stroke:var(--danger)}
+.node.active .sh:not(.solid){stroke:var(--accent)}
 .node.inactive{opacity:.45}
 .edge .hit{stroke:transparent;stroke-width:14;fill:none}
 .edge .ln{stroke:var(--ink);stroke-width:1.8;fill:none}
@@ -295,6 +338,12 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
 .edge.err .ln{stroke:var(--danger)} .edge.err .lbl{fill:var(--danger)}
 .edge.off .ln{opacity:.35}
 .edge .handle{fill:var(--paper);stroke:var(--sel);stroke-width:2;cursor:move}
+.edge .handle.soft{fill:var(--sel)}
+.edge .handle:hover{stroke-width:3}
+.edge .ins{cursor:copy;opacity:.75}
+.edge .ins circle{fill:var(--paper);stroke:var(--sel);stroke-width:1.3;stroke-dasharray:2 1.5}
+.edge .ins path{stroke:var(--sel);stroke-width:1.4}
+.edge .ins:hover{opacity:1}
 .node.warn .sh:not(.solid){stroke:var(--warn)}
 .node.failed .sh:not(.solid){stroke:var(--danger);stroke-width:3}
 .node.failed .sh.solid{fill:var(--danger)}
@@ -312,9 +361,28 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
 .dropbad .sh,.dropbad .ln{stroke:var(--danger)!important;stroke-width:3}
 .tmp.bad{stroke:var(--danger)}
 .tmptip{fill:var(--danger);font:600 12px var(--sans);paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.mring{fill:none;stroke-width:4.5;pointer-events:none}
+.val.mval{font-size:10.5px;font-weight:700}
 .rankbadge rect{fill:var(--ink)}
 .rankbadge text{fill:var(--paper);font:700 10px var(--mono);text-anchor:middle;dominant-baseline:central}
 .rankbadge.idle{opacity:.35}
+.grp .gframe{fill:var(--ink);fill-opacity:.025;stroke:var(--line2);stroke-width:1.5;stroke-dasharray:7 4;cursor:move}
+.grp .gbox{fill:var(--node);stroke:var(--ink);stroke-width:2;cursor:move}
+.grp .gbox2{fill:none;stroke:var(--line2);stroke-width:1;stroke-dasharray:3 3;pointer-events:none}
+.grp.gfill .gframe,.grp.gfill .gbox{fill:var(--gf);fill-opacity:var(--go)}
+.grp.gcol .gframe,.grp.gcol .gbox{stroke:var(--gc)}
+.grp.gcol .gname{fill:var(--gc)}
+.grp.sel .gframe,.grp.sel .gbox{stroke:var(--sel);stroke-width:2.2}
+.grp .gname{font:700 12.5px var(--sans);fill:var(--muted);pointer-events:none;paint-order:stroke;stroke:var(--paper);stroke-width:3px;stroke-linejoin:round}
+.grp.collapsed .gname{fill:var(--ink);stroke:none}
+.grp.collapsed.gcol .gname{fill:var(--gc)}
+.grp .gsub{font:11px var(--sans);fill:var(--muted);pointer-events:none}
+.gtoggle{cursor:pointer}
+.gtoggle circle{fill:var(--panel);stroke:var(--line2);stroke-width:1.2}
+.gtoggle path{fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.gtoggle:hover circle{stroke:var(--accent);stroke-width:2}
+.gresize{cursor:nwse-resize}
+.gresize rect{fill:var(--sel)}
 .tmp{stroke:var(--accent);stroke-width:2;stroke-dasharray:4 3;fill:none;pointer-events:none}
 .marq{fill:var(--sel-soft);stroke:var(--sel);stroke-dasharray:4 3;pointer-events:none}
 .droptarget .sh,.droptarget .ln{stroke:var(--accent)!important;stroke-width:3}
@@ -351,6 +419,7 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
     <button class="btn icon" id="bUndo" title="Annuler (Ctrl+Z)"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
     <button class="btn icon" id="bRedo" title="Rétablir (Ctrl+Y)"><svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
     <button class="btn icon" id="bFit" title="Recadrer (F)"><svg viewBox="0 0 24 24"><path d="M3 8V4h4M21 8V4h-4M3 16v4h4M21 16v4h-4"/></svg></button>
+    <button class="btn icon" id="bKeys" title="Personnaliser les raccourcis clavier"><svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></svg></button>
     <button class="btn icon" id="bTheme" title="Thème clair / sombre"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg></button>
     <button class="btn icon" id="bHelp" title="Aide (?)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17h.01"/></svg></button>
   </div>
@@ -371,6 +440,7 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
       <rect id="bg1" x="0" y="0" width="100%" height="100%" fill="url(#gridpat)"/>
       <rect id="bg2" x="0" y="0" width="100%" height="100%" fill="url(#gridpat2)"/>
       <g id="world">
+        <g id="groups"></g>
         <g id="edges"></g>
         <g id="nodes"></g>
         <g id="fx"></g>
@@ -401,22 +471,23 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
   <p>L'Atelier Machinations sert à modéliser l'<b>économie interne</b> d'un jeu : comment des ressources (or, PV, XP, ennemis, cartes…) sont produites, stockées, converties et détruites, et comment ces flux s'influencent. Il s'inspire du langage Machinations de Joris Dormans (<i>Game Mechanics: Advanced Game Design</i>, Adams &amp; Dormans, 2012). Un diagramme se dessine, puis se <b>joue</b> pas à pas, puis se <b>mesure</b> sur des centaines de parties simulées.</p>
   <h3 id="doc-ui">L'interface</h3>
   <table>
-    <tr><td>Barre du haut</td><td>Nom du diagramme, fichiers (Nouveau, Ouvrir, Enregistrer, Exporter), exemples, les trois modes, annuler/rétablir, recadrer, thème, documentation.</td></tr>
-    <tr><td>Palette (gauche)</td><td>Outils et nœuds. Survole un élément pour sa fiche ; clique pour l'activer ; Maj+clic ou double-clic pour poser plusieurs nœuds d'affilée.</td></tr>
+    <tr><td>Barre du haut</td><td>Nom du diagramme, fichiers (Nouveau, Ouvrir, Enregistrer, Exporter), exemples, les trois modes, annuler/rétablir, recadrer, raccourcis clavier ⌨, thème, documentation.</td></tr>
+    <tr><td>Palette (gauche)</td><td>Outils et nœuds. Survole un élément pour sa fiche. Pour poser un nœud : <b>glisse-le</b> depuis la palette jusqu'au canevas, ou clique dessus puis sur le canevas ; Maj+clic ou double-clic sur l'outil pour en poser plusieurs d'affilée. La touche affichée à droite est son raccourci (personnalisable).</td></tr>
     <tr><td>Canevas (centre)</td><td>Le diagramme. Glisser le fond déplace la vue, la molette zoome. En bas à gauche : zoom, taille du diagramme et compteur de problèmes (cliquable).</td></tr>
     <tr><td>Inspecteur (droite)</td><td>Les réglages de l'élément sélectionné, ou ceux du diagramme quand rien n'est sélectionné (types de ressources, variables, paramètres, liste des problèmes). Le bouton <b>?</b> ouvre la page de documentation correspondante.</td></tr>
     <tr><td>Tiroir (bas)</td><td>En Simulation : commandes et graphique en direct. En Statistiques : réglages des séries de parties et résultats.</td></tr>
   </table>
   <h3 id="doc-first">Un premier diagramme en 2 minutes</h3>
   <ol>
-    <li>Appuie sur <kbd>S</kbd> puis clique sur le canevas : une <b>Source</b> apparaît (automatique, marquée <b>*</b>).</li>
-    <li>Appuie sur <kbd>P</kbd> et clique à droite : un <b>Réservoir</b>.</li>
-    <li>Appuie sur <kbd>1</kbd> et glisse de la source vers le réservoir : une <b>connexion de ressource</b>. Son étiquette vide vaut 1.</li>
+    <li>Glisse une <b>Source</b> depuis la palette jusqu'au canevas (ou appuie sur <kbd>S</kbd> puis clique) : elle est automatique, marquée <b>*</b>.</li>
+    <li>Glisse un <b>Réservoir</b> à sa droite (ou <kbd>P</kbd> puis clic).</li>
+    <li>Prends l'outil Ressource (<kbd>1</kbd>) et glisse de la source vers le réservoir : une <b>connexion de ressource</b>. Son étiquette vide vaut 1.</li>
     <li>Double-clique sur la connexion et tape <code>D6</code> : la source produira un jet de dé à chaque pas.</li>
-    <li>Passe en mode <b>Simulation</b> et appuie sur <kbd>Espace</b> : les ressources circulent, le réservoir se remplit.</li>
+    <li>Passe en mode <b>Simulation</b> et appuie sur <kbd>Espace</kbd> : les ressources circulent, le réservoir se remplit.</li>
     <li>Ajoute une <b>Fin</b> (<kbd>E</kbd>), relie le réservoir à elle avec l'outil <kbd>2</kbd> (connexion d'état) et l'étiquette <code>&gt;=30</code>.</li>
     <li>Passe en mode <b>Statistiques</b> et lance 500 parties : tu obtiens la durée moyenne pour atteindre 30.</li>
   </ol>
+  <p class="muted" style="font-size:12.5px">Les touches citées dans cette documentation sont celles par défaut ; elles sont personnalisables (voir <a data-goto-doc="shortcuts">Raccourcis</a>).</p>
   <h3 id="doc-modes">Les trois modes</h3>
   <table>
     <tr><td>Édition</td><td>Construire et régler le diagramme. Les problèmes détectés sont signalés en rouge (erreur) ou orange (avertissement).</td></tr>
@@ -429,11 +500,19 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
   <h2>Les nœuds</h2>
   <p>Chaque nœud a un <b>nom</b> (utilisable dans les formules), un <b>mode d'activation</b> (voir <a data-goto-doc="activation">Activation</a>) et une <b>valeur</b> que lisent les connexions d'état. Les petits symboles à droite du nœud résument ses réglages : <b>*</b> automatique, <b>s</b> au démarrage, <b>p</b> pousser, <b>&amp;</b> tout ou rien ; un <b>double contour</b> signale un nœud interactif.</p>
   <p>On peut changer le type d'un nœud après coup dans l'inspecteur : ses connexions sont conservées, et celles qui deviennent invalides passent en rouge.</p>
+  <h3 id="doc-look">Apparence : couleur et position du nom</h3>
+  <ul>
+    <li><b>Bordure</b> et <b>Remplissage</b> (section Apparence de l'inspecteur) : choisis une des pastilles ou une couleur libre (dernier rond) ; ∅ revient à la couleur par défaut. La bordure colore aussi le nom ; sans remplissage choisi, le fond prend un léger reflet de la bordure. Sur un remplissage foncé, la valeur s'affiche en blanc. Avec plusieurs nœuds sélectionnés, les couleurs s'appliquent à tous. Pour une note, seule la couleur du texte existe. Les couleurs sont purement visuelles : elles n'ont aucun effet sur la simulation.</li>
+    <li><b>Remplissage dynamique</b> (réservoirs) : le fond se remplit de bas en haut avec la couleur de chaque <a data-goto-doc="types">type de ressource</a> contenu, en couches proportionnelles. <b>Avec une capacité</b>, la hauteur remplie = contenu ÷ capacité (un réservoir à moitié plein est rempli à moitié, avec un trait pointillé au niveau). <b>Sans capacité</b>, le réservoir est entièrement coloré dès qu'il contient quelque chose, et seules les proportions entre types varient. L'aperçu fonctionne aussi en édition, d'après le contenu initial ; le total reste écrit au centre. Les parties vides laissent voir la couleur de remplissage choisie.</li>
+    <li><b>Position du nom</b> : <b>glisse le nom</b> directement sur le canevas pour le placer où tu veux, ou choisis Dessus / Dessous / Gauche / Droite dans l'inspecteur (ce qui réinitialise une position libre). Le nom suit son nœud quand on le déplace. Double-cliquer sur le nom permet toujours de le renommer.</li>
+    <li>Les états (sélection en bleu, erreur en rouge, avertissement en orange, action en simulation) restent prioritaires sur la couleur choisie.</li>
+  </ul>
 
   <h3 id="doc-node-pool">Réservoir <small>Pool</small></h3>
   <p>Stocke des ressources. C'est le nœud le plus courant : PV, or, munitions, ennemis présents, cartes en main.</p>
   <ul>
-    <li><b>Réglages</b> : ressources initiales, capacité (vide = illimitée), type des ressources initiales, Tirer/Pousser, Partiel/Tout ou rien.</li>
+    <li><b>Réglages</b> : ressources initiales, capacité (vide = illimitée), Tirer/Pousser, Partiel/Tout ou rien.</li>
+    <li><b>Contenu initial mixte</b> : dès que le diagramme a plusieurs <a data-goto-doc="types">types de ressources</a>, l'inspecteur affiche une ligne par type (ex. 5 Or + 3 Bois) ; le total est calculé et comparé à la capacité. Si une connexion d'état <code>+k</code> fait gagner des ressources au réservoir, un réglage indique de quel type elles sont.</li>
     <li><b>Actif en Tirer</b> (par défaut) : prend le débit de chacune de ses connexions entrantes, depuis une source ou un autre réservoir.</li>
     <li><b>Actif en Pousser</b> : envoie le débit de chacune de ses sorties. Un réservoir actif <i>sans aucune entrée</i> pousse automatiquement.</li>
     <li><b>Passif</b> : n'agit pas, mais accepte ce qu'on lui pousse et se laisse vider par les nœuds actifs en aval.</li>
@@ -547,6 +626,9 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
     <li>Ou le nœud de départ pousse de lui-même ce qu'il libère (porte, délai, file, convertisseur, échangeur).</li>
   </ul>
   <p>Deux nœuds passifs reliés n'échangent donc jamais rien : l'inspecteur affiche alors un avertissement orange. On ne peut <b>tirer</b> que dans une source ou un réservoir.</p>
+  <h3 id="doc-priority">Priorité entre plusieurs connexions</h3>
+  <p>Quand un nœud sert plusieurs connexions et n'a pas de quoi satisfaire tout le monde (un réservoir qui pousse vers deux cibles, un nœud qui tire sur deux réservoirs presque vides…), l'ordre de service ne dépend <b>pas</b> de l'ordre dans lequel les connexions ont été tracées. Il suit le <b>rang d'action du nœud à l'autre bout</b> : en ordre de création, la cible (ou la source) de rang le plus petit est servie en premier, et ce rang se change dans l'inspecteur de chaque nœud. Si l'ordre des actions est « Aléatoire », la priorité est tirée au sort à chaque fois. Même règle pour les déclencheurs : un nœud qui en déclenche plusieurs les fait agir dans l'ordre de leur rang.</p>
+  <p>Exceptions : les sorties d'une porte (répartition par poids) et les paires d'un échangeur (entrée n°1 → sortie n°1, dans l'ordre de création des connexions).</p>
   <h3 id="doc-rate">L'étiquette (débit)</h3>
   <p>Quantité déplacée à chaque activation : un nombre, une formule, des dés… (voir <a data-goto-doc="formulas">Formules</a>). Vide = 1. <code>tout</code> = tout le contenu disponible (pas depuis une source). Le transfert est limité par ce que contient le départ et par la place à l'arrivée ; en simulation, un transfert incomplet passe en <b>rouge</b> avec la mention <code>✕ reçu/demandé</code>.</p>
   <h3 id="doc-rate-special">Cas particuliers</h3>
@@ -562,13 +644,25 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
   <ul>
     <li>une connexion peut <b>filtrer</b> un type : seules ces ressources y circulent, et elle prend la couleur du type ;</li>
     <li>une source ou un convertisseur produit son type par défaut, ou celui imposé par le filtre de la sortie ;</li>
-    <li>un réservoir peut contenir plusieurs types (le détail apparaît au survol en simulation) ; sa valeur est le total.</li>
+    <li>un réservoir peut <b>démarrer</b> avec plusieurs types (contenu initial mixte, dans son inspecteur) ;</li>
+    <li>un réservoir peut contenir plusieurs types ; sa valeur est le total. Il affiche alors un <b>anneau coloré</b> proportionnel à chaque type et le nombre de chaque type dans sa couleur (jusqu'à 3 ; au-delà, « +N »). Le détail par type apparaît aussi dans l'inspecteur et au survol ;</li>
+    <li>une <b>connexion d'état</b> qui part d'un réservoir peut ne lire qu'un type (voir <a data-goto-doc="state-value">Valeur lue</a>), et une formule peut lire un type avec <code>[Réservoir:Type]</code>.</li>
   </ul>
+  <h3 id="doc-edge-path">Tracé : points de passage et angles</h3>
+  <p>Valable pour les connexions de ressources comme pour les connexions d'état. Sélectionne une connexion :</p>
+  <ul>
+    <li>de petits <b>+</b> apparaissent au milieu de chaque segment : <b>glisse un +</b> pour créer un point de passage à l'endroit voulu. On peut en ajouter autant que nécessaire ;</li>
+    <li>chaque point est une <b>poignée ronde</b> : glisse-la pour la déplacer (alignée sur la grille ; maintiens <kbd>Alt</kbd> pour un placement libre) ;</li>
+    <li><b>double-clic</b> ou <kbd>Alt</kbd>+clic sur une poignée la supprime ; « Redresser » dans l'inspecteur les supprime toutes ;</li>
+    <li>l'inspecteur choisit les <b>angles durs</b> (segments droits, coins nets : poignées creuses) ou <b>souples</b> (courbe lisse qui passe par chaque point : poignées pleines) ;</li>
+    <li>quand on déplace ensemble les deux nœuds d'une connexion (sélection multiple, flèches, copier-coller), ses points de passage suivent ; si un seul bout bouge, les points restent en place ;</li>
+    <li>l'étiquette se place toujours à mi-longueur du tracé, et les jetons de la simulation suivent le tracé.</li>
+  </ul>
+  <p class="ex">Les diagrammes créés avec une version précédente (une seule courbure) sont convertis automatiquement : la courbe devient un point de passage aux angles souples.</p>
   <h3 id="doc-edge-edit">Manipuler les connexions</h3>
   <ul>
-    <li>Sélectionne une connexion pour la régler ; une poignée apparaît au milieu : glisse-la pour <b>courber</b> la ligne, « Redresser » pour annuler.</li>
-    <li>« Inverser ⇄ » change le sens. Double-clic = modifier l'étiquette sur place.</li>
-    <li>Deux connexions de sens opposés entre les mêmes nœuds sont courbées automatiquement.</li>
+    <li>« Inverser ⇄ » change le sens (les points de passage suivent). Double-clic = modifier l'étiquette sur place.</li>
+    <li>Deux connexions de sens opposés entre les mêmes nœuds sont écartées automatiquement par un point de passage, tout comme une connexion d'état qui vise une autre connexion.</li>
     <li>Certaines connexions sont <b>refusées</b> (le trait devient rouge pendant le tracé avec la raison) : boucle sur soi-même, doublon, vers une note, vers une source, depuis un puits, vers un registre ou une fin, vers une autre connexion.</li>
   </ul>
 </section>
@@ -584,6 +678,7 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
     <tr><td>Délai, file, convertisseur</td><td>Ressources en attente</td></tr>
     <tr><td>Source, porte, échangeur, fin</td><td>0 (utile seulement comme départ de déclencheur)</td></tr>
   </table>
+  <p><b>Lire un seul type de ressource</b> : quand le diagramme a plusieurs types et que la connexion d'état part d'un réservoir, l'inspecteur de la connexion propose « Valeur lue dans… ». Choisis un type pour ne compter que celui-ci (par exemple déclencher une fin quand le coffre contient 10 <i>bois</i>, quel que soit l'or qu'il contient). La connexion prend alors la couleur du type. Le filtre marche pour les quatre effets : activateurs, modificateurs, et la valeur de référence des modificateurs est celle du type au départ.</p>
   <h3 id="doc-state-kinds">Les quatre effets</h3>
   <table class="syntax">
     <tr><td>*</td><td><b>Déclencheur</b>. La cible agit dans le même pas, juste après que la source a agi avec succès, ou dès qu'un nœud passif a reçu des ressources. Pour un délai ou une file : quand une ressource sort. Permet d'enchaîner des actions : « chaque fois que j'achète, je pioche ».</td></tr>
@@ -610,6 +705,7 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
   <ul>
     <li>Le nom d'un nœud renvoie sa valeur : <code>Or</code>, <code>Ennemis</code>. Les majuscules sont ignorées (<code>or</code> = <code>Or</code>), mais pas les accents (<code>Épique</code> ≠ <code>Epique</code>).</li>
     <li>Nom avec espaces : entre crochets <code>[Points de vie]</code>, ou avec des tirets bas <code>points_de_vie</code>. L'inspecteur indique la forme à utiliser.</li>
+    <li><code>[Réservoir:Type]</code> : nombre de ressources d'un seul type dans un réservoir, ex. <code>[Coffre:Bois]</code> ou <code>[Or Bleu:Or]</code>. Sur un autre type de nœud, renvoie sa valeur normale.</li>
     <li><code>t</code> (ou <code>pas</code>) : le numéro du pas courant.</li>
     <li>Les <b>variables</b> du diagramme (inspecteur, rien de sélectionné) : <code>vague = 1 + floor(t/7)</code>, puis <code>vague</code> dans n'importe quelle étiquette. Une variable peut utiliser d'autres variables (pas de boucle).</li>
     <li>Deux nœuds portant le même nom rendent la référence ambiguë : avertissement. Si une variable porte le nom d'un nœud, c'est le <b>nœud</b> qui l'emporte (avertissement également).</li>
@@ -647,6 +743,40 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
   <p><b>Partiel</b> (par défaut) : le nœud prend ce qu'il peut, même si c'est moins que demandé (le manque est signalé). <b>Tout ou rien</b> <i>(&amp;)</i> : si une seule connexion ne peut pas être servie en entier, <b>rien ne bouge</b> et le nœud est marqué ✕. À utiliser pour un coût (« payer 5 or pour… »).</p>
   <h3 id="doc-success">Succès et échec</h3>
   <p>Un nœud a <b>réussi</b> s'il a obtenu tout ce qu'il demandait. Sinon il a <b>échoué</b> : il est marqué ✕, ses déclencheurs <code>*</code> ne partent pas et ses déclencheurs inverses <code>!</code> partent.</p>
+</section>
+
+<section id="doc-groups" data-title="Groupes">
+  <h2>Groupes</h2>
+  <p>Un groupe rassemble des nœuds dans un <b>cadre</b> : pour organiser un grand diagramme en sous-systèmes (combat, économie, progression…) et masquer les détails quand on n'en a pas besoin. Les groupes sont purement visuels : ils ne changent rien à la simulation, et les nœuds d'un groupe réduit continuent de fonctionner.</p>
+  <h3 id="doc-group-make">Créer et défaire un groupe</h3>
+  <ul>
+    <li>Sélectionne des nœuds et/ou des groupes (Maj+clic, ou Maj+glisser pour un rectangle), puis <kbd>Ctrl</kbd>+<kbd>G</kbd> ou « Grouper » dans l'inspecteur. Le cadre s'ajuste automatiquement autour d'eux.</li>
+    <li>Les éléments à grouper doivent appartenir au <b>même groupe</b> (ou à aucun) ; sinon l'opération est refusée avec un message.</li>
+    <li><b>Groupes imbriqués</b> : sélectionne des groupes (clic sur leur cadre) pour les grouper à leur tour. Un groupe parent s'agrandit automatiquement s'il le faut pour contenir ses enfants.</li>
+    <li><b>Dégrouper</b> : sélectionne le cadre (ou un nœud du groupe) puis <kbd>Ctrl</kbd>+<kbd>Maj</kbd>+<kbd>G</kbd>, ou « Dégrouper » dans l'inspecteur. Le contenu reste en place et rejoint le groupe parent s'il y en a un.</li>
+    <li>Un nœud créé (clic ou glisser depuis la palette) à l'intérieur d'un cadre déplié rejoint automatiquement ce groupe (le plus intérieur). Un nœud copié-collé reste dans son groupe d'origine.</li>
+    <li>Ces raccourcis sont personnalisables (voir <a data-goto-doc="shortcuts">Raccourcis</a>), ainsi que « Réduire / agrandir le groupe sélectionné », sans touche par défaut.</li>
+  </ul>
+  <h3 id="doc-group-move">Déplacer, redimensionner</h3>
+  <ul>
+    <li><b>Glisse le cadre</b> (son fond ou son titre) pour le déplacer avec tout son contenu, sous-groupes et points de passage compris. Un sous-groupe ne peut pas sortir du cadre de son parent.</li>
+    <li>Les nœuds d'un groupe <b>ne peuvent se déplacer qu'à l'intérieur de leur cadre</b> (à la souris comme aux flèches).</li>
+    <li>Quand le cadre est sélectionné, la <b>poignée bleue</b> en bas à droite le redimensionne ; il ne peut pas devenir plus petit que son contenu. « Ajuster au contenu » le recale au plus juste.</li>
+    <li>Double-clic sur le titre : renommer le groupe sur place.</li>
+    <li>Comme le fond d'un cadre sert à le déplacer, pour faire défiler la vue au-dessus d'un grand cadre utilise <kbd>Espace</kbd>+glisser ou le clic molette.</li>
+  </ul>
+  <h3 id="doc-group-collapse">Réduire et agrandir</h3>
+  <ul>
+    <li>Le bouton rond en haut à gauche du cadre (▾ / ▸) réduit le groupe en une <b>boîte compacte</b> qui affiche son nom et le nombre de nœuds ; les nœuds qu'il contient disparaissent visuellement.</li>
+    <li>Les connexions entre l'intérieur et l'extérieur du groupe restent visibles : elles partent de la boîte (ou y arrivent). Les connexions internes sont masquées. Leurs points de passage sont ignorés tant que le groupe est réduit.</li>
+    <li>Agrandir rend aux nœuds <b>exactement leur position</b>. La boîte réduite se déplace comme le cadre, en emportant son contenu.</li>
+    <li>Si un nœud caché a une erreur ou un avertissement (ou échoue en simulation), la boîte porte un badge « ! ». Aller à un problème depuis la liste des problèmes déplie automatiquement les groupes nécessaires.</li>
+    <li>On peut réduire et agrandir les groupes aussi pendant la simulation. Un nœud interactif caché dans un groupe réduit ne peut pas être cliqué : agrandis le groupe (ou active le joueur simulé).</li>
+  </ul>
+  <h3 id="doc-group-look">Apparence</h3>
+  <p>Dans l'inspecteur du groupe : couleur du <b>contour</b> (elle colore aussi le titre), couleur du <b>fond</b> et son <b>opacité</b>. Le fond reste léger par défaut pour laisser lire les nœuds.</p>
+  <h3 id="doc-group-del">Supprimer</h3>
+  <p><kbd>Suppr</kbd> sur un cadre sélectionné (ou « Supprimer tout ») efface le groupe <b>avec tout son contenu</b> et les connexions qui y touchent ; <kbd>Ctrl</kbd>+<kbd>Z</kbd> annule. Pour ne retirer que le cadre, utilise Dégrouper.</p>
 </section>
 
 <section id="doc-simulation" data-title="Simulation">
@@ -783,22 +913,27 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
 
 <section id="doc-shortcuts" data-title="Raccourcis">
   <h2>Raccourcis</h2>
+  <p>Les raccourcis à une touche sont <b>personnalisables</b> : bouton clavier ⌨ de la barre du haut, ou <a data-open-keys>ouvrir la fenêtre des raccourcis</a>. Clique sur la touche d'une action puis appuie sur la nouvelle ; ↺ revient à la valeur par défaut, ✕ retire le raccourci. Une touche déjà prise est retirée de son ancienne action (un message le signale). Les réglages sont propres à ce navigateur. Certaines actions n'ont pas de raccourci par défaut mais peuvent en recevoir un : changer de mode, réinitialiser la simulation, ouvrir cette fenêtre.</p>
+  <h3 id="doc-keys-custom">Raccourcis personnalisables (valeurs actuelles)</h3>
+  <table class="syntax"><tbody id="kbDocRows"></tbody></table>
+  <h3 id="doc-keys-fixed">Raccourcis fixes</h3>
   <table class="syntax">
-    <tr><td>V</td><td>Outil sélection</td></tr>
-    <tr><td>1 · 2</td><td>Connexion de ressource · d'état (restent actifs jusqu'à Échap)</td></tr>
-    <tr><td>P S D C T G</td><td>Réservoir, Source, Puits, Convertisseur, Échangeur, Porte</td></tr>
-    <tr><td>L Q R E X</td><td>Délai, File, Registre, Fin, Note (Maj+lettre : en poser plusieurs)</td></tr>
+    <tr><td>Maj + touche d'un nœud</td><td>Poser plusieurs nœuds de ce type d'affilée</td></tr>
+    <tr><td>Glisser depuis la palette</td><td>Déposer un nœud directement à l'endroit voulu</td></tr>
     <tr><td>Double-clic</td><td>Renommer un nœud, modifier une étiquette ou une note sur place</td></tr>
     <tr><td>Maj+clic · Maj+glisser</td><td>Ajouter à la sélection · sélection rectangulaire</td></tr>
     <tr><td>Alt+glisser</td><td>Dupliquer les nœuds en les déplaçant</td></tr>
+    <tr><td>Glisser un nom</td><td>Déplacer le nom d'un nœud</td></tr>
+    <tr><td>Glisser un + sur une connexion</td><td>Ajouter un point de passage (Alt : sans grille)</td></tr>
+    <tr><td>Double-clic / Alt+clic sur un point</td><td>Supprimer un point de passage</td></tr>
     <tr><td>Flèches (Maj : ×5)</td><td>Déplacer la sélection</td></tr>
     <tr><td>Glisser le fond · molette · Espace+glisser</td><td>Déplacer la vue · zoomer · déplacer la vue en tout outil</td></tr>
     <tr><td>Ctrl+Z · Ctrl+Y (ou Ctrl+Maj+Z)</td><td>Annuler · rétablir</td></tr>
     <tr><td>Ctrl+C · Ctrl+V · Ctrl+D · Ctrl+A</td><td>Copier · coller · dupliquer · tout sélectionner</td></tr>
-    <tr><td>Suppr · Échap · F</td><td>Supprimer · désélectionner / annuler l'outil · recadrer</td></tr>
+    <tr><td>Suppr · Échap</td><td>Supprimer (un cadre sélectionné : avec son contenu) · désélectionner / annuler l'outil ou le tracé en cours</td></tr>
+    <tr><td>Glisser un cadre · poignée bleue</td><td>Déplacer un groupe avec son contenu · le redimensionner</td></tr>
+    <tr><td>Clic sur ▾ / ▸</td><td>Réduire / agrandir un groupe</td></tr>
     <tr><td>Ctrl+S</td><td>Enregistrer le fichier .json</td></tr>
-    <tr><td>Espace · Entrée</td><td>Simulation : un pas · lecture / pause</td></tr>
-    <tr><td>?</td><td>Ouvrir la documentation</td></tr>
   </table>
 </section>
 
@@ -837,6 +972,16 @@ button.prob{cursor:pointer} button.prob:hover{border-color:var(--line2);backgrou
 
         <p class="empty" id="docEmpty" hidden>Aucun résultat.</p>
       </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="keysModal" hidden>
+  <div class="box keysbox" role="dialog" aria-label="Raccourcis clavier">
+    <div class="dochead"><h2>Raccourcis clavier</h2><span class="muted" style="font-size:12px">Clique sur une touche puis appuie sur la nouvelle. Échap annule.</span><button class="btn close" id="keysClose">Fermer ✕</button></div>
+    <div class="keysbody">
+      <table class="keys" id="keysTable"></table>
+      <p class="muted" style="font-size:12px;margin:12px 0 0">Les raccourcis sont propres à ce navigateur (ils ne sont pas enregistrés dans les diagrammes). Une touche déjà utilisée est retirée de son ancienne action. Réservés : Échap, Suppr, flèches, Tab ; Espace ne sert qu'aux actions de simulation (en édition, Espace + glisser déplace la vue). Une action accepte une touche seule ou une combinaison avec Ctrl / Cmd (et éventuellement Maj), comme Ctrl+G. Les raccourcis d'édition avec Ctrl / Cmd (annuler, copier, coller, dupliquer, tout sélectionner, enregistrer) ne sont pas modifiables.</p>
+      <div style="margin-top:12px"><button class="btn" id="keysDefaults" style="border-color:var(--line)">Revenir aux raccourcis par défaut</button></div>
     </div>
   </div>
 </div>
@@ -1016,6 +1161,11 @@ const Engine = (() => {
     for (const id of N.keys()) { inRes.set(id, []); outRes.set(id, []); }
     RE.forEach(e => { outRes.get(e.from).push(e); inRes.get(e.to).push(e); });
 
+    const rank = new Map(D.nodes.map((n, i) => [n.id, i]));
+    const byRank = key => (a, b) => (rank.get(a[key]) ?? 1e9) - (rank.get(b[key]) ?? 1e9);
+    function shuf(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+    // priorité entre connexions : rang du nœud à l'autre bout (ou tirage si l'ordre est aléatoire)
+    const prio = (list, key, stable) => (order === 'random' && !stable) ? shuf(list.slice()) : list.slice().sort(byRank(key));
     const errors = new Map();
     const push = (m, k, v) => { if (!m.has(k)) m.set(k, []); m.get(k).push(v); };
     const stateInfo = new Map(), activatorsOf = new Map(), triggersFrom = new Map(), labelMods = new Map(), nodeMods = [];
@@ -1035,7 +1185,7 @@ const Engine = (() => {
     const S = {
       step: 0, ended: null, endStep: null, endId: null, timeout: false, seed,
       pools: new Map(), regs: new Map(), buf: new Map(), dq: new Map(), qcur: new Map(),
-      credits: new Map(), rr: new Map(), modAcc: new Map(), prev: new Map(), init: new Map(),
+      credits: new Map(), rr: new Map(), modAcc: new Map(), prev: new Map(), prevE: new Map(), init: new Map(), initPools: new Map(),
       drained: new Map(), fail: new Map(), short: new Map(), failCount: new Map(), hist: new Map(), flows: new Map(), received: new Set(), fired: new Map(), need: new Map(),
     };
     let firingConv = null;
@@ -1053,10 +1203,23 @@ const Engine = (() => {
       }
     }
 
+    // valeur lue par une connexion d'état (éventuellement filtrée sur un type de ressource)
+    function srcVal(e) {
+      const t = tOk(e.rtype), n = N.get(e.from);
+      if (t && n && n.type === 'pool') return (S.pools.get(n.id) || {})[t] || 0;
+      return valueOf(e.from);
+    }
+    const initVal = e => { const t = tOk(e.rtype), n = N.get(e.from); return (t && n && n.type === 'pool') ? ((S.initPools.get(n.id) || {})[t] || 0) : (S.init.get(e.from) || 0); };
     const evaluating = new Set();
     function lookup(name) {
       if (name === 't' || name === 'pas' || name === 'step') return S.step;
       if (byName.has(name)) return valueOf(byName.get(name));
+      const colon = name.lastIndexOf(':');
+      if (colon > 0) {
+        const nid = byName.get(name.slice(0, colon).replace(/_+$/, '')), tn = name.slice(colon + 1).replace(/^_+/, '');
+        const ty = types.find(t => norm(t.name) === tn);
+        if (nid && ty) { const nn = N.get(nid); return nn.type === 'pool' ? ((S.pools.get(nid) || {})[ty.id] || 0) : valueOf(nid); }
+      }
       if (vars.has(name)) {
         if (evaluating.has(name)) throw new Error('Variable circulaire « ' + name + ' »');
         evaluating.add(name);
@@ -1079,7 +1242,7 @@ const Engine = (() => {
       if (sl === 'tout' || sl === 'all' || s === '∞') return Infinity;
       let v = (s === '') ? 1 : evalSrc(s, e.id);
       const mods = labelMods.get(e.id);
-      if (mods) for (const m of mods) { const k = evalSrc(m.label, m.id); v += k * (valueOf(m.from) - (S.init.get(m.from) || 0)); }
+      if (mods) for (const m of mods) { const k = evalSrc(m.label, m.id); v += k * (srcVal(m) - initVal(m)); }
       return v;
     }
     function amount(e) {
@@ -1185,7 +1348,7 @@ const Engine = (() => {
     const pullable = id => { const t = N.get(id).type; return t === 'source' || t === 'pool'; };
 
     function pullInputs(n, allMode) {
-      const ins = inRes.get(n.id).filter(e => pullable(e.from));
+      const ins = prio(inRes.get(n.id).filter(e => pullable(e.from)), 'from');
       const wants = ins.map(e => ({ e, w: amount(e) }));
       if (allMode) {
         for (const { e, w } of wants) {
@@ -1208,7 +1371,7 @@ const Engine = (() => {
       return ok;
     }
     function pushOutputs(n, allMode) {
-      const outs = outRes.get(n.id);
+      const outs = prio(outRes.get(n.id), 'to');
       const wants = outs.map(e => ({ e, w: amount(e) }));
       if (allMode) {
         const need = {}; let anyNeed = 0;
@@ -1242,7 +1405,7 @@ const Engine = (() => {
         const b = bufOf(n.id, e.id); let left = need.get(e.id);
         for (const t of Object.keys(b)) { if (left <= 0) break; const q = Math.min(left, b[t]); b[t] -= q; if (!b[t]) delete b[t]; left -= q; }
       }
-      for (const e of outRes.get(n.id)) {
+      for (const e of prio(outRes.get(n.id), 'to')) {
         const a = amount(e); if (a === Infinity || a <= 0) continue;
         const k = Math.min(a, space(e.to)); if (k <= 0) continue;
         sendAlong(e, [{ type: rtypeOf(e) || tOk(n.rtype) || defType, n: k }], depth + 1);
@@ -1261,7 +1424,7 @@ const Engine = (() => {
         return false;
       }
       firingConv = n.id;
-      try { for (const { e, m } of missing) if (m > 0) move(e, m); }
+      try { for (const { e, m } of prio(missing.map(x => Object.assign({ from: x.e.from }, x)), 'from')) if (m > 0) move(e, m); }
       finally { firingConv = null; }
       firingConv = n.id;
       try { return tryConvert(n); } finally { firingConv = null; }
@@ -1281,7 +1444,7 @@ const Engine = (() => {
       return true;
     }
     function distribute(g, parcels, depth) {
-      const outs = outRes.get(g.id); if (!outs.length) return;
+      const outs = prio(outRes.get(g.id), 'to', true); if (!outs.length) return;
       const pct = outs.every(e => /%/.test(String(e.label ?? '')));
       const slots = outs.map(e => { const v = rawRate(e); return v === Infinity ? 1 : Math.max(0, v); });
       let sum = slots.reduce((a, b) => a + b, 0);
@@ -1307,7 +1470,7 @@ const Engine = (() => {
     function trim(ps, k) { const out = []; for (const p of ps) { if (k <= 0) break; const q = Math.min(k, p.n); out.push({ type: p.type, n: q }); k -= q; } return out; }
     function emit(n, parcels) {
       if (S.emitted) S.emitted.add(n.id);
-      const outs = outRes.get(n.id); if (!outs.length) return;
+      const outs = prio(outRes.get(n.id), 'to', true); if (!outs.length) return;
       if (outs.length === 1) { const k = Math.min(count(parcels), space(outs[0].to)); if (k > 0) sendAlong(outs[0], trim(parcels, k), 1); return; }
       for (const pc of parcels) for (let k = 0; k < pc.n; k++) {
         const r = S.rr.get(n.id) || 0; S.rr.set(n.id, r + 1);
@@ -1339,17 +1502,17 @@ const Engine = (() => {
     }
     function activatorsOK(id) {
       const list = activatorsOf.get(id); if (!list) return true;
-      return list.every(e => { try { return testCond(stateInfo.get(e.id).cond, valueOf(e.from)); } catch (err) { errors.set(e.id, err.message); return false; } });
+      return list.every(e => { try { return testCond(stateInfo.get(e.id).cond, srcVal(e)); } catch (err) { errors.set(e.id, err.message); return false; } });
     }
     function blockedReason(id) {
-      const bad = (activatorsOf.get(id) || []).filter(e => { try { return !testCond(stateInfo.get(e.id).cond, valueOf(e.from)); } catch (err) { return true; } });
-      return 'Bloqué par ' + (bad.length > 1 ? 'des activateurs' : 'un activateur') + ' : ' + bad.map(e => nm(e.from) + ' vaut ' + fmtN(valueOf(e.from)) + ', la condition « ' + String(e.label).trim() + ' » est fausse').join(' ; ') + '.';
+      const bad = (activatorsOf.get(id) || []).filter(e => { try { return !testCond(stateInfo.get(e.id).cond, srcVal(e)); } catch (err) { return true; } });
+      return 'Bloqué par ' + (bad.length > 1 ? 'des activateurs' : 'un activateur') + ' : ' + bad.map(e => nm(e.from) + (tOk(e.rtype) && N.get(e.from).type === 'pool' ? ' (« ' + typeName(e.rtype) + ' »)' : '') + ' vaut ' + fmtN(srcVal(e)) + ', la condition « ' + String(e.label).trim() + ' » est fausse').join(' ; ') + '.';
     }
     function endGame(n) { if (!S.ended) { S.ended = n.name || 'Fin'; S.endStep = S.step; S.endId = n.id; } }
 
     function fire(n) {
       switch (n.type) {
-        case 'source': for (const e of outRes.get(n.id)) move(e, amount(e)); return true;
+        case 'source': for (const e of prio(outRes.get(n.id), 'to')) move(e, amount(e)); return true;
         case 'pool': {
           const ins = inRes.get(n.id), outs = outRes.get(n.id);
           const pushMode = n.flow === 'push' || (ins.length === 0 && outs.length > 0);
@@ -1406,12 +1569,12 @@ const Engine = (() => {
           if (S.ended) break;
         }
         for (const id of S.received) { if (done.has(id) || recTrig.has(id)) continue; const rt = N.get(id).type; if (rt === 'delay' || rt === 'queue') continue; recTrig.add(id); queueTriggers(id, true, next); }
-        wave = next;
+        wave = order === 'random' ? shuf(next) : next.sort((a, b) => (rank.get(a.id) ?? 1e9) - (rank.get(b.id) ?? 1e9));
       }
       // modificateurs de nœud
       for (const e of nodeMods) {
         const tgt = N.get(e.to); if (!tgt) continue;
-        const cur = valueOf(e.from), pv = S.prev.get(e.from) ?? cur, d = cur - pv;
+        const cur = srcVal(e), pv = S.prevE.get(e.id) ?? cur, d = cur - pv;
         if (!d) continue;
         const k = evalSrc(e.label, e.id);
         if (tgt.type === 'register') { S.regs.set(tgt.id, clampReg(tgt, (S.regs.get(tgt.id) || 0) + k * d)); continue; }
@@ -1426,6 +1589,7 @@ const Engine = (() => {
       updateRegisters();
       for (const n of N.values()) if (n.type === 'end' && activatorsOf.has(n.id) && activatorsOK(n.id)) endGame(n);
       for (const id of N.keys()) S.prev.set(id, valueOf(id));
+      for (const e of nodeMods) S.prevE.set(e.id, srcVal(e));
       if (opts.maxSteps > 0 && S.step >= opts.maxSteps && !S.ended) { S.ended = 'Limite de pas'; S.endStep = S.step; S.timeout = true; }
       record();
       return true;
@@ -1433,12 +1597,17 @@ const Engine = (() => {
 
     // initialisation
     for (const n of N.values()) {
-      if (n.type === 'pool') { const st = Math.max(0, Math.floor(+n.start || 0)); S.pools.set(n.id, st ? { [tOk(n.rtype) || defType]: st } : {}); }
+      if (n.type === 'pool') {
+        if (n.startMix && typeof n.startMix === 'object') { const p = {}; for (const [k, v] of Object.entries(n.startMix)) if (typeIds.has(k) && +v > 0) p[k] = Math.floor(+v); S.pools.set(n.id, p); }
+        else { const st = Math.max(0, Math.floor(+n.start || 0)); S.pools.set(n.id, st ? { [tOk(n.rtype) || defType]: st } : {}); }
+      }
       if (n.type === 'delay' || n.type === 'queue') S.dq.set(n.id, []);
       if (n.type === 'register') S.regs.set(n.id, clampReg(n, +n.start || 0));
     }
     updateRegisters();
     for (const id of N.keys()) { const v = valueOf(id); S.init.set(id, v); S.prev.set(id, v); }
+    for (const [id, p] of S.pools) S.initPools.set(id, Object.assign({}, p));
+    for (const e of nodeMods) S.prevE.set(e.id, srcVal(e));
     record();
 
     return {
@@ -1461,7 +1630,7 @@ const Engine = (() => {
         const base = src === '' ? 1 : det ? evalSrc(src) : null;
         const terms = [];
         for (const m of labelMods.get(eid) || []) {
-          const k = evalSrc(m.label), d = valueOf(m.from) - (S.init.get(m.from) || 0);
+          const k = evalSrc(m.label), d = srcVal(m) - initVal(m);
           if (k && d) terms.push({ k, d, from: m.from });
         }
         const total = det ? base + terms.reduce((a, t) => a + t.k * t.d, 0) : null;
@@ -1614,7 +1783,7 @@ const typeColor = t => (D.resourceTypes.find(r => r.id === t) || {}).color;
 const fmt = v => { if (v == null || !isFinite(v)) return '–'; if (Math.abs(v) >= 100000) return (v / 1000).toFixed(0) + 'k'; if (Math.abs(v) >= 10000) return (v / 1000).toFixed(1) + 'k'; return Number.isInteger(v) ? String(v) : (Math.round(v * 100) / 100).toString(); };
 
 function newDiagram() {
-  return { version: 1, name: 'Sans titre', notes: '', nodes: [], edges: [], vars: [], resourceTypes: [{ id: 'r', name: 'Ressource', color: '#64748b' }], settings: { maxSteps: 100, runs: 200, order: 'creation', showOrder: false } };
+  return { version: 1, name: 'Sans titre', notes: '', nodes: [], edges: [], vars: [], resourceTypes: [{ id: 'r', name: 'Ressource', color: '#64748b' }], settings: { maxSteps: 100, runs: 200, order: 'creation', showOrder: false }, groups: [] };
 }
 function normalize(d) {
   const b = newDiagram();
@@ -1623,6 +1792,18 @@ function normalize(d) {
   d.edges = (d.edges || []).filter(e => e && e.from && e.to).map(e => Object.assign({ kind: 'resource', label: '', rtype: '' }, e));
   d.vars = d.vars || []; d.settings = Object.assign({ maxSteps: 100, runs: 200, order: 'creation', showOrder: false }, d.settings || {});
   if (!d.resourceTypes || !d.resourceTypes.length) d.resourceTypes = b.resourceTypes;
+  d.groups = (Array.isArray(d.groups) ? d.groups : []).filter(g => g && g.id && isFinite(g.x) && isFinite(g.y)).map(g => Object.assign({ name: 'Groupe', w: 200, h: 120, parent: null }, g));
+  { const gids = new Set(d.groups.map(g => g.id)); d.groups.forEach(g => { if (g.parent && !gids.has(g.parent)) g.parent = null; }); d.nodes.forEach(n => { if (n.group && !gids.has(n.group)) delete n.group; }); }
+  // ancien format : une seule courbure (point de contrôle relatif) → un point de passage, angles souples
+  const nm = new Map(d.nodes.map(n => [n.id, n])), em = new Map(d.edges.map(e => [e.id, e]));
+  const center = id => { const n = nm.get(id); if (n) return { x: n.x, y: n.y }; const e = em.get(id); if (e && nm.get(e.from) && nm.get(e.to)) { const a = nm.get(e.from), c = nm.get(e.to); return { x: (a.x + c.x) / 2, y: (a.y + c.y) / 2 }; } return null; };
+  for (const e of d.edges) {
+    if (e.bend && !e.pts) {
+      const A = center(e.from), B = center(e.to);
+      if (A && B) { const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2, c = { x: mx + e.bend.dx, y: my + e.bend.dy }; e.pts = [{ x: Math.round(.25 * A.x + .5 * c.x + .25 * B.x), y: Math.round(.25 * A.y + .5 * c.y + .25 * B.y) }]; e.smooth = true; }
+    }
+    delete e.bend;
+  }
   return d;
 }
 function defaults(type) {
@@ -1701,6 +1882,7 @@ function iconSVG(t) {
 }
 const SQUARE = new Set(['register', 'end']);
 function radiusToward(n, ux, uy) {
+  if (n.type === 'groupbox') return Math.min((n.bw / 2 + 3) / Math.abs(ux || 1e-9), (n.bh / 2 + 3) / Math.abs(uy || 1e-9));
   const extra = (n.mode === 'interactive' && HAS_MODE.has(n.type)) || (n.type === 'register' && n.interactive) ? 5 : 0;
   if (n.type === 'text') { const w = noteWidth(n) / 2 + 4, h = noteHeight(n) / 2 + 4; return Math.min(w / Math.abs(ux || 1e-9), h / Math.abs(uy || 1e-9)); }
   if (SQUARE.has(n.type)) { const hx = R + 2 + extra, hy = (n.type === 'register' ? R * .8 : R * .9) + 2 + extra; return Math.min(hx / Math.abs(ux || 1e-9), hy / Math.abs(uy || 1e-9)); }
@@ -1722,21 +1904,43 @@ function computeGeo() {
   const get = (e, depth = 0) => {
     if (G.has(e.id)) return G.get(e.id);
     if (depth > 6) return null;
-    const A = nodes.get(e.from); if (!A) return null;
-    const B = nodes.get(e.to); let Bp;
-    if (B) Bp = { x: B.x, y: B.y };
+    const A = nodes.has(e.from) ? anchorOf(e.from) : null; if (!A) return null;
+    const B = nodes.has(e.to) ? anchorOf(e.to) : null; let Bp;
+    if (B) { if (B.id === A.id) return null; Bp = { x: B.x, y: B.y }; }
     else { const te = edges.get(e.to); if (!te) return null; const tg = get(te, depth + 1); if (!tg) return null; Bp = tg.mid; }
-    const mx = (A.x + Bp.x) / 2, my = (A.y + Bp.y) / 2;
-    const c = e.bend ? { x: mx + e.bend.dx, y: my + e.bend.dy } : null;
-    const aim1 = c || Bp, aim0 = c || { x: A.x, y: A.y };
+    const folded = A.type === 'groupbox' || (B && B.type === 'groupbox');
+    const pts = folded ? [] : (e.pts || []).filter(q => q && isFinite(q.x) && isFinite(q.y));
+    const aim1 = pts[0] || Bp, aim0 = pts[pts.length - 1] || { x: A.x, y: A.y };
     const s = clipPt(A, aim1.x, aim1.y);
     let en;
     if (B) en = clipPt(B, aim0.x, aim0.y);
     else { const dx = Bp.x - aim0.x, dy = Bp.y - aim0.y, L = Math.hypot(dx, dy) || 1; en = { x: Bp.x - dx / L * 6, y: Bp.y - dy / L * 6 }; }
-    const d = c ? `M${s.x.toFixed(1)},${s.y.toFixed(1)} Q${c.x.toFixed(1)},${c.y.toFixed(1)} ${en.x.toFixed(1)},${en.y.toFixed(1)}` : `M${s.x.toFixed(1)},${s.y.toFixed(1)} L${en.x.toFixed(1)},${en.y.toFixed(1)}`;
-    const mid = c ? { x: .25 * s.x + .5 * c.x + .25 * en.x, y: .25 * s.y + .5 * c.y + .25 * en.y } : { x: (s.x + en.x) / 2, y: (s.y + en.y) / 2 };
-    const tan = c ? { x: en.x - c.x, y: en.y - c.y } : { x: en.x - s.x, y: en.y - s.y };
-    const g = { d, s, en, mid, tan, c, A, Bp }; G.set(e.id, g); return g;
+    const P = [s, ...pts, en], f = v => v.toFixed(1);
+    let d = `M${f(s.x)},${f(s.y)}`, samples = [], segMids = [], tan;
+    if (pts.length && e.smooth) {
+      // Catmull-Rom → Bézier : la courbe passe par chaque point
+      let lastC2 = null;
+      for (let k = 0; k < P.length - 1; k++) {
+        const p0 = P[k - 1] || P[k], p1 = P[k], p2 = P[k + 1], p3 = P[k + 2] || P[k + 1];
+        const c1 = { x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6 }, c2 = { x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6 };
+        d += ` C${f(c1.x)},${f(c1.y)} ${f(c2.x)},${f(c2.y)} ${f(p2.x)},${f(p2.y)}`;
+        const bz = t => { const u = 1 - t; return { x: u * u * u * p1.x + 3 * u * u * t * c1.x + 3 * u * t * t * c2.x + t * t * t * p2.x, y: u * u * u * p1.y + 3 * u * u * t * c1.y + 3 * u * t * t * c2.y + t * t * t * p2.y }; };
+        for (let q = (k ? 1 : 0); q <= 16; q++) samples.push(bz(q / 16));
+        segMids.push(bz(.5)); lastC2 = c2;
+      }
+      tan = { x: en.x - lastC2.x, y: en.y - lastC2.y };
+      if (Math.hypot(tan.x, tan.y) < .5) tan = { x: en.x - P[P.length - 2].x, y: en.y - P[P.length - 2].y };
+    } else {
+      for (let k = 1; k < P.length; k++) { d += ` L${f(P[k].x)},${f(P[k].y)}`; segMids.push({ x: (P[k - 1].x + P[k].x) / 2, y: (P[k - 1].y + P[k].y) / 2 }); }
+      samples = P;
+      tan = { x: en.x - P[P.length - 2].x, y: en.y - P[P.length - 2].y };
+    }
+    // milieu du tracé (à mi-longueur)
+    let tot = 0; const lens = [0];
+    for (let k = 1; k < samples.length; k++) { tot += Math.hypot(samples[k].x - samples[k - 1].x, samples[k].y - samples[k - 1].y); lens.push(tot); }
+    let mid = { x: (s.x + en.x) / 2, y: (s.y + en.y) / 2 };
+    for (let k = 1; k < samples.length; k++) if (lens[k] >= tot / 2) { const r = (tot / 2 - lens[k - 1]) / ((lens[k] - lens[k - 1]) || 1); mid = { x: samples[k - 1].x + (samples[k].x - samples[k - 1].x) * r, y: samples[k - 1].y + (samples[k].y - samples[k - 1].y) * r }; break; }
+    const g = { d, s, en, mid, tan, pts, segMids, A, Bp }; G.set(e.id, g); return g;
   };
   D.edges.forEach(e => get(e));
   return G;
@@ -1749,6 +1953,11 @@ function arrowHead(g, size) {
 
 /* ---------- validation statique (erreurs d'étiquettes) ---------- */
 let staticErrors = new Map();
+function typedRefOK(v) {
+  const i = v.lastIndexOf(':'); if (i <= 0) return false;
+  const nn = v.slice(0, i).replace(/_+$/, ''), tn = v.slice(i + 1).replace(/^_+/, '');
+  return D.nodes.some(n => n.name && Engine.norm(n.name) === nn) && D.resourceTypes.some(t => Engine.norm(t.name) === tn);
+}
 function computeStaticErrors() {
   staticErrors = new Map();
   const names = new Set(D.nodes.filter(n => n.name).map(n => Engine.norm(n.name)));
@@ -1756,7 +1965,7 @@ function computeStaticErrors() {
   ['t', 'pas', 'step'].forEach(n => names.add(n));
   const check = (key, src) => {
     const c = Engine.compile(src); if (c.err) { staticErrors.set(key, c.err); return; }
-    const unknown = []; (function walk(a) { if (!a || typeof a !== 'object') return; if (a.o === 'id' && !names.has(a.v)) unknown.push(a.v); for (const k of ['a', 'b']) walk(a[k]); (a.args || []).forEach(walk); })(c.ast);
+    const unknown = []; (function walk(a) { if (!a || typeof a !== 'object') return; if (a.o === 'id' && !names.has(a.v) && !typedRefOK(a.v)) unknown.push(a.v); for (const k of ['a', 'b']) walk(a[k]); (a.args || []).forEach(walk); })(c.ast);
     if (unknown.length) staticErrors.set(key, 'Nom inconnu : ' + unknown.join(', '));
   };
   for (const e of D.edges) {
@@ -1835,6 +2044,9 @@ function computeWarnings() {
     if (n) addWarn('var:' + i, 'La variable « ' + v.name + ' » porte le même nom que le nœud « ' + n.name + ' » : dans les formules, c\'est le nœud qui sera utilisé. Renomme l\'un des deux.');
   });
   for (const e of D.edges) {
+    if (e.kind === 'state' && e.rtype) { const s0 = nodeById(e.from); if (s0 && s0.type !== 'pool') addWarn(e.id, 'Filtre de type ignoré : seul un réservoir peut être lu par type de ressource.'); }
+  }
+  for (const e of D.edges) {
     if (e.kind !== 'resource') continue;
     const s = nodeById(e.from), l = String(e.label ?? '').trim();
     if (s && ['delay', 'queue', 'trader'].includes(s.type) && l !== '' && l !== '1') addWarn(e.id, 'Étiquette ignorée : ' + (s.type === 'trader' ? 'l\'échangeur transmet exactement ce qu\'il prend sur l\'entrée appariée.' : 'tout ce qui arrive à échéance sort ; la durée se règle sur le nœud.'));
@@ -1856,7 +2068,7 @@ function render() {
     else if (staticWarnings.has(e.id) && mode !== 'sim') cls.push('warn');
     const sh = mode === 'sim' && sim && sim.S.short.get(e.id);
     if (sh) cls.push('short');
-    const col = e.kind === 'resource' && e.rtype ? typeColor(e.rtype) : null;
+    const col = e.rtype && (e.kind === 'resource' || (nodeById(e.from) || {}).type === 'pool') ? typeColor(e.rtype) : null;
     const st = col ? ` style="stroke:${col}"` : '', fst = col ? ` style="fill:${col}"` : '';
     let lbl = String(e.label ?? '').trim();
     const etitle = staticErrors.get(e.id) || simErr.get(e.id) || (sh ? 'Ce pas : seulement ' + fmt(sh.got) + ' sur ' + fmt(sh.want) + ' — ' + sh.why : '') || (staticWarnings.get(e.id) || []).join('\n');
@@ -1864,15 +2076,20 @@ function render() {
     let simInfo = false;
     if (mode === 'sim' && sim && (e.kind === 'resource' || !isNode(e.to))) { const ri = rateText(e); if (ri) { lbl = ri; simInfo = true; } }
     if (sh) { lbl = (lbl || '1') + '  ✕ ' + fmt(sh.got) + '/' + fmt(sh.want); simInfo = true; }
-    if (lbl) { const shown = !simInfo && lbl.length > 22 ? lbl.slice(0, 21) + '…' : lbl, cw = simInfo ? 6.95 : 7.25, bw = shown.length * cw + 10; eh += `<rect class="lblbg" x="${(g.mid.x - bw / 2).toFixed(1)}" y="${(g.mid.y - 9).toFixed(1)}" width="${bw.toFixed(1)}" height="18" rx="5"/>`; }
-    if (lbl) eh += `<text class="lbl${simInfo ? ' live' : ''}" x="${g.mid.x.toFixed(1)}" y="${(g.mid.y - (e.kind === 'resource' ? 0 : 0)).toFixed(1)}"${col ? ` style="fill:${col}"` : ''}>${esc(!simInfo && lbl.length > 22 ? lbl.slice(0, 21) + '…' : lbl)}</text>`;
+    const lblDy = sel.has(e.id) && sel.size === 1 && mode !== 'sim' ? -16 : 0;
+    if (lbl) { const shown = !simInfo && lbl.length > 22 ? lbl.slice(0, 21) + '…' : lbl, cw = simInfo ? 6.95 : 7.25, bw = shown.length * cw + 10; eh += `<rect class="lblbg" x="${(g.mid.x - bw / 2).toFixed(1)}" y="${(g.mid.y - 9 + lblDy).toFixed(1)}" width="${bw.toFixed(1)}" height="18" rx="5"/>`; }
+    if (lbl) eh += `<text class="lbl${simInfo ? ' live' : ''}" x="${g.mid.x.toFixed(1)}" y="${(g.mid.y + lblDy).toFixed(1)}"${col ? ` style="fill:${col}"` : ''}>${esc(!simInfo && lbl.length > 22 ? lbl.slice(0, 21) + '…' : lbl)}</text>`;
     if (col && !lbl) eh += `<circle cx="${g.mid.x}" cy="${g.mid.y}" r="4" fill="${col}" stroke="var(--paper)" stroke-width="2"/>`;
-    if (sel.has(e.id) && sel.size === 1 && mode !== 'sim') eh += `<circle class="handle" data-handle="${e.id}" cx="${g.mid.x}" cy="${g.mid.y}" r="5.5"/>`;
+    if (sel.has(e.id) && sel.size === 1 && mode !== 'sim') {
+      g.segMids.forEach((m, k) => { eh += `<g class="ins" data-ins="${e.id}:${k}" transform="translate(${m.x.toFixed(1)},${m.y.toFixed(1)})"><title>Glisser pour ajouter un point de passage</title><circle r="5"/><path d="M-2.6,0 H2.6 M0,-2.6 V2.6"/></g>`; });
+      g.pts.forEach((q, k) => { eh += `<circle class="handle${e.smooth ? ' soft' : ''}" data-wp="${e.id}:${k}" cx="${q.x}" cy="${q.y}" r="5.5"><title>Glisser pour déplacer · double-clic ou Alt+clic pour supprimer</title></circle>`; });
+    }
     eh += '</g>';
   }
   $('#edges').innerHTML = eh;
+  $('#groups').innerHTML = groupsSVG(simErr);
   let nh = '';
-  for (const n of D.nodes) nh += nodeSVG(n, simErr);
+  for (const n of D.nodes) if (!hiddenBy(n)) nh += nodeSVG(n, simErr);
   $('#nodes').innerHTML = nh;
   applyView();
   $('#countPill').textContent = D.nodes.filter(n => n.type !== 'text').length + ' nœuds · ' + D.edges.length + ' connexions';
@@ -1907,7 +2124,10 @@ function nodeSVG(n, simErr) {
     if (pending.has(n.id)) cls.push('pending');
     if (sim && sim.S.fired.get(n.id)) cls.push('active');
   }
-  let g = `<g class="${cls.join(' ')}" data-node="${n.id}" transform="translate(${n.x},${n.y})">`;
+  if (n.color) cls.push('colored');
+  if (n.fill && n.type !== 'text') { cls.push('filled'); if (isDark(n.fill)) cls.push('darkfill'); }
+  const st = [n.color ? '--nc:' + n.color : '', n.fill ? '--nf:' + n.fill : ''].filter(Boolean).join(';');
+  let g = `<g class="${cls.join(' ')}" data-node="${n.id}" transform="translate(${n.x},${n.y})"${st ? ` style="${esc(st)}"` : ''}>`;
   if (n.type === 'text') {
     const sz = n.size || 14, lines = noteLines(n), w = noteWidth(n), h = noteHeight(n);
     if (sel.has(n.id)) g += `<rect class="halo" x="${-w / 2 - 6}" y="${-h / 2 - 4}" width="${w + 12}" height="${h + 8}" rx="6"/>`;
@@ -1917,6 +2137,9 @@ function nodeSVG(n, simErr) {
   }
   if (sel.has(n.id)) g += `<circle class="halo" r="${R * 1.75}"/>`;
   g += shape(n.type, 1, 'sh', n);
+  const cont = n.type === 'pool' ? poolContentsNow(n) : null;
+  const dyn = n.type === 'pool' && n.dynFill;
+  if (dyn) g += dynFillSVG(n, cont);
   if (interactive) g += shape(n.type, 1.24, 'sh outer', n);
   // valeur interne
   let val = '', dim = false;
@@ -1928,12 +2151,33 @@ function nodeSVG(n, simErr) {
     if (n.type === 'pool' && +n.start) val = fmt(+n.start);
     if (n.type === 'register') { if (String(n.formula ?? '').trim()) { val = 'ƒ'; dim = true; } else val = fmt(+n.start || 0); }
   }
+  let multi = null;
+  if (n.type === 'pool' && !dyn) {
+    const ks = D.resourceTypes.map(t => t.id).filter(k => cont[k] > 0);
+    if (ks.length > 1) multi = ks.map(k => ({ k, v: cont[k], c: typeColor(k) || 'var(--ink)' }));
+  }
+  if (dyn && n.type === 'pool') { const tot = Object.values(cont).reduce((a, b) => a + b, 0); val = (mode === 'sim' || tot) ? fmt(tot) : ''; }
+  if (multi) {
+    // anneau proportionnel + détail par type
+    const tot = multi.reduce((a, m) => a + m.v, 0), rr = R + 4.5; let a0 = -Math.PI / 2;
+    for (const m of multi) {
+      const a1 = a0 + m.v / tot * Math.PI * 2, large = a1 - a0 > Math.PI ? 1 : 0;
+      const x0 = rr * Math.cos(a0), y0 = rr * Math.sin(a0), x1 = rr * Math.cos(a1 - 0.0001), y1 = rr * Math.sin(a1 - 0.0001);
+      g += `<path class="mring" d="M${x0.toFixed(2)},${y0.toFixed(2)} A${rr},${rr} 0 ${large} 1 ${x1.toFixed(2)},${y1.toFixed(2)}" style="stroke:${m.c}"/>`;
+      a0 = a1;
+    }
+    const shown = multi.slice(0, 3), lh = 11.5, y0 = -(shown.length - 1) * lh / 2;
+    shown.forEach((m, i) => { g += `<text class="val mval" y="${(y0 + i * lh).toFixed(1)}" style="fill:${m.c}">${esc(fmt(m.v))}</text>`; });
+    if (multi.length > 3) g += `<text class="val mval" y="${R - 5}" style="fill:var(--muted)">+${multi.length - 3}</text>`;
+    val = '';
+  }
   if (val) {
     let tc = '';
     if (n.type === 'pool') { const t = n.rtype && typeColor(n.rtype); if (mode === 'sim' && sim) { const cont = sim.poolContents(n.id), ks = Object.keys(cont); if (ks.length === 1 && ks[0] !== D.resourceTypes[0].id) tc = typeColor(ks[0]); } else if (t && n.rtype !== D.resourceTypes[0].id) tc = t; }
     const yv = (n.type === 'drain') ? -6 : (n.type === 'source' ? 5 : (n.type === 'delay' || n.type === 'queue') ? -R - 9 : (n.type === 'converter' ? 0 : 0));
     const small = n.type === 'drain' || n.type === 'delay' || n.type === 'queue' || n.type === 'converter';
-    g += `<text class="val${dim ? ' dim' : ''}${small ? ' small' : ''}" y="${yv}"${tc ? ` style="fill:${tc}"` : ''}>${esc(val)}</text>`;
+    if (dyn) tc = '';
+    g += `<text class="val${dim ? ' dim' : ''}${small ? ' small' : ''}${dyn ? ' halo' : ''}" y="${yv}"${tc ? ` style="fill:${tc}"` : ''}>${esc(val)}</text>`;
   }
   // badges
   let b = '';
@@ -1949,18 +2193,61 @@ function nodeSVG(n, simErr) {
   let name = n.name || '';
   if (n.type === 'pool' && n.capacity !== '' && n.capacity != null && !isNaN(+n.capacity)) name += ' (≤' + n.capacity + ')';
   if ((n.type === 'delay' || n.type === 'queue') && mode !== 'sim') name += ' ⟨' + (n.delay || '1') + '⟩';
-  const ny = (n.type === 'gate' ? R * 1.1 : n.type === 'register' ? R * .8 : R) + (interactive ? 6 : 0) + 15;
-  if (name) g += `<text class="nm" y="${ny}">${esc(name)}</text>`;
+  if (name) {
+    const lp = labelPos(n);
+    g += `<text class="nm" data-label="${n.id}" x="${lp.x.toFixed(1)}" y="${lp.y.toFixed(1)}" text-anchor="${lp.anchor}">${esc(name)}</text>`;
+  }
   if (failMsg) g += `<g class="xbadge" transform="translate(${-R * 1.05},${-R * 1.05})"><circle r="8"/><path d="M-3.2,-3.2 L3.2,3.2 M3.2,-3.2 L-3.2,3.2"/></g>`;
   else if (mode !== 'sim' && (staticErrors.has(n.id) || staticWarnings.has(n.id))) g += `<g class="${staticErrors.has(n.id) ? 'xbadge' : 'wbadge'}" transform="translate(${-R * 1.05},${-R * 1.05})"><circle r="8"/><text y="0.5">!</text></g>`;
   g += `<title>${esc(tooltip(n))}</title></g>`;
   return g;
+}
+/* position du nom d'un nœud : préréglage (dessous, dessus, gauche, droite, centre) ou décalage libre */
+function nodeExtent(n) {
+  const interactive = (n.mode === 'interactive' && HAS_MODE.has(n.type)) || (n.type === 'register' && n.interactive);
+  const ex = interactive ? 6 : 0;
+  return { h: (n.type === 'gate' ? R * 1.1 : n.type === 'register' ? R * .8 : R) + ex, w: (n.type === 'gate' ? R * 1.1 : R) + ex };
+}
+function labelPos(n) {
+  const e = nodeExtent(n);
+  if (n.lx != null && n.ly != null) return { x: n.lx, y: n.ly, anchor: 'middle' };
+  switch (n.lpos) {
+    case 'above': return { x: 0, y: -e.h - 8, anchor: 'middle' };
+    case 'left': return { x: -e.w - 12, y: 4, anchor: 'end' };
+    case 'right': return { x: e.w + 12, y: 4, anchor: 'start' };
+    default: return { x: 0, y: e.h + 15, anchor: 'middle' };
+  }
+}
+function setLabelPos(n, pos) { delete n.lx; delete n.ly; if (pos === 'below') delete n.lpos; else n.lpos = pos; }
+function poolContentsNow(n) {
+  if (mode === 'sim' && sim) return Object.assign({}, sim.poolContents(n.id));
+  return initialContents(n);
+}
+function isDark(hex) {
+  const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex || ''); if (!m) return false;
+  const [r, g, b] = [m[1], m[2], m[3]].map(x => parseInt(x, 16) / 255).map(c => c <= .03928 ? c / 12.92 : Math.pow((c + .055) / 1.055, 2.4));
+  return .2126 * r + .7152 * g + .0722 * b < .3;
+}
+/* remplissage « liquide » : couches de bas en haut, une par type ; hauteur = total / capacité, ou plein sans capacité */
+function dynFillSVG(n, cont) {
+  const parts = D.resourceTypes.map(t => ({ c: t.color, v: cont[t.id] || 0 })).filter(p => p.v > 0);
+  const tot = parts.reduce((a, p) => a + p.v, 0);
+  if (!tot) return '';
+  const cap = hasCap(n) ? +n.capacity : 0;
+  const frac = cap > 0 ? Math.min(1, tot / cap) : 1;
+  const r = R - 1, H = 2 * r * frac, cid = 'clip-' + n.id;
+  let y = r, h = '';
+  for (const p of parts) { const ph = H * p.v / tot; y -= ph; h += `<rect x="${-r}" y="${y.toFixed(2)}" width="${2 * r}" height="${(ph + 0.4).toFixed(2)}" fill="${p.c}"/>`; }
+  return `<clipPath id="${cid}"><circle r="${r}"/></clipPath><g class="dynfill" clip-path="url(#${cid})">${h}</g>` + (cap > 0 && frac < 1 ? `<line class="dynlevel" x1="${-r}" x2="${r}" y1="${(r - H).toFixed(2)}" y2="${(r - H).toFixed(2)}" clip-path="url(#${cid})"/>` : '');
 }
 function tooltip(n) {
   let t = TYPES[n.type].label + (n.name ? ' — ' + n.name : '');
   if (mode === 'sim' && sim) {
     if (n.type === 'pool') { const c = sim.poolContents(n.id); const parts = Object.entries(c).map(([k, v]) => (D.resourceTypes.find(r => r.id === k) || { name: k }).name + ' : ' + v); if (parts.length > 1) t += '\n' + parts.join('\n'); }
     if (n.type === 'drain') t += '\nDétruit : ' + sim.valueOf(n.id);
+  } else if (n.type === 'pool' && D.resourceTypes.length > 1) {
+    const c = initialContents(n), parts = D.resourceTypes.filter(rt => c[rt.id]).map(rt => rt.name + ' : ' + c[rt.id]);
+    if (parts.length) t += '\nContenu initial — ' + parts.join(', ');
   }
   const err = staticErrors.get(n.id) || (sim && sim.errors.get(n.id)); if (err) t += '\n✕ ' + err;
   if (mode === 'sim' && sim && sim.S.fail.get(n.id)) t += '\n✕ Ce pas : ' + sim.S.fail.get(n.id);
@@ -1975,18 +2262,77 @@ function applyView() {
   $('#zoomPill').textContent = Math.round(view.k * 100) + ' %';
 }
 
+/* ---------- raccourcis personnalisables ---------- */
+const KEYS_STORE = 'atelier-machinations-keys';
+const KEY_ACTIONS = [
+  { id: 'select', label: 'Outil Sélection', group: 'Outils', def: 'v' },
+  { id: 'res', label: 'Connexion de ressource', group: 'Outils', def: '1' },
+  { id: 'state', label: 'Connexion d\'état', group: 'Outils', def: '2' },
+  ...Object.entries(TYPES).map(([k, t]) => ({ id: k, label: t.label, group: 'Nœuds', def: t.key })),
+  { id: 'group', label: 'Grouper la sélection', group: 'Groupes', def: 'ctrl+g' },
+  { id: 'ungroup', label: 'Dégrouper', group: 'Groupes', def: 'ctrl+shift+g' },
+  { id: 'collapse', label: 'Réduire / agrandir le groupe sélectionné', group: 'Groupes', def: '' },
+  { id: 'fit', label: 'Recadrer la vue', group: 'Vue et aide', def: 'f' },
+  { id: 'help', label: 'Ouvrir la documentation', group: 'Vue et aide', def: '?' },
+  { id: 'keys', label: 'Personnaliser les raccourcis', group: 'Vue et aide', def: '' },
+  { id: 'modeEdit', label: 'Passer en mode Édition', group: 'Modes', def: '' },
+  { id: 'modeSim', label: 'Passer en mode Simulation', group: 'Modes', def: '' },
+  { id: 'modeStats', label: 'Passer en mode Statistiques', group: 'Modes', def: '' },
+  { id: 'step', label: 'Simulation : avancer d\'un pas', group: 'Simulation', def: ' ' },
+  { id: 'play', label: 'Simulation : lecture / pause', group: 'Simulation', def: 'enter' },
+  { id: 'reset', label: 'Simulation : réinitialiser', group: 'Simulation', def: '' },
+];
+const SIM_ACTIONS = new Set(['step', 'play', 'reset']), FREE_ACTIONS = new Set(['fit', 'help', 'keys', 'modeEdit', 'modeSim', 'modeStats']), GROUP_ACTIONS = new Set(['group', 'ungroup', 'collapse']);
+function runAction(a) {
+  switch (a) {
+    case 'fit': fitView(); break; case 'help': openHelp(); break; case 'keys': openKeys(); break;
+    case 'modeEdit': setMode('edit'); break; case 'modeSim': setMode('sim'); break; case 'modeStats': setMode('stats'); break;
+    case 'group': groupSel(); break; case 'ungroup': ungroupSel(); break; case 'collapse': toggleCollapseSel(); break;
+    case 'step': if (mode === 'sim') { stopPlay(); doStep(); } break;
+    case 'play': if (mode === 'sim') togglePlay(); break;
+    case 'reset': if (mode === 'sim') { stopPlay(); resetSim(); render(); renderSimInspector(); renderLive(); updateSimBar(); } break;
+    default: if (mode === 'sim') { notify(SIM_LOCK, 'warn'); break; } if (a === 'select') setTool('select'); else if (a === 'res' || a === 'state') setTool(a, true); else if (TYPES[a]) setTool(a);
+  }
+}
+const RESERVED_KEYS = new Set(['escape', 'delete', 'backspace', 'tab', 'shift', 'control', 'alt', 'meta', 'altgraph', 'capslock', 'contextmenu', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'dead', 'unidentified', 'os']);
+let keymap = {};
+function loadKeymap() {
+  keymap = {}; KEY_ACTIONS.forEach(a => keymap[a.id] = a.def);
+  try { const s = JSON.parse(localStorage.getItem(KEYS_STORE) || 'null'); if (s && typeof s === 'object') for (const a of KEY_ACTIONS) if (typeof s[a.id] === 'string') keymap[a.id] = s[a.id]; } catch (e) { /* */ }
+}
+function saveKeymap() { try { localStorage.setItem(KEYS_STORE, JSON.stringify(keymap)); } catch (e) { /* */ } }
+const normKey = k => k.length === 1 ? k.toLowerCase() : k.toLowerCase();
+/* combinaison tapée : touche seule, ou ctrl+[shift+][alt+]touche (Cmd compte comme Ctrl) */
+function comboFromEvent(ev) {
+  let k = normKey(ev.key);
+  if (ev.code && /^Key[A-Z]$/.test(ev.code) && (ev.ctrlKey || ev.metaKey)) k = ev.code.slice(3).toLowerCase();
+  if (ev.ctrlKey || ev.metaKey) return 'ctrl+' + (ev.shiftKey ? 'shift+' : '') + (ev.altKey ? 'alt+' : '') + k;
+  return k;
+}
+const FIXED_COMBOS = new Set(['ctrl+z', 'ctrl+shift+z', 'ctrl+y', 'ctrl+c', 'ctrl+v', 'ctrl+x', 'ctrl+d', 'ctrl+a', 'ctrl+s', 'ctrl+p', 'ctrl+w', 'ctrl+t', 'ctrl+n', 'ctrl+r', 'ctrl+f', 'ctrl+l', 'ctrl+q']);
+function keyLabel(k) {
+  if (!k) return '';
+  if (k.includes('+') && k.length > 1) { const parts = k.split('+'), key = parts.pop(); return parts.map(m => ({ ctrl: 'Ctrl', shift: 'Maj', alt: 'Alt' }[m] || m)).join('+') + '+' + keyLabel(key); }
+  const names = { ' ': 'Espace', enter: 'Entrée', home: 'Début', end: 'Fin', pageup: 'Pg↑', pagedown: 'Pg↓', insert: 'Inser' };
+  if (names[k]) return names[k];
+  if (/^f\d+$/.test(k)) return k.toUpperCase();
+  return k.length === 1 ? k.toUpperCase() : k.charAt(0).toUpperCase() + k.slice(1);
+}
+const actionForKey = k => KEY_ACTIONS.find(a => keymap[a.id] && keymap[a.id] === k);
+loadKeymap();
+
 /* ---------- palette ---------- */
 function renderPalette() {
-  let h = `<h4>Outils</h4>` + toolBtn('select', 'Sélection', 'V');
-  h += toolBtn('res', 'Ressource', '1') + toolBtn('state', 'État', '2');
+  let h = `<h4>Outils</h4>` + toolBtn('select', 'Sélection', keyLabel(keymap.select));
+  h += toolBtn('res', 'Ressource', keyLabel(keymap.res)) + toolBtn('state', 'État', keyLabel(keymap.state));
   h += `<h4>Nœuds de base</h4>`;
-  for (const [k, t] of Object.entries(TYPES)) if (t.group === 'n') h += toolBtn(k, t.label, t.key.toUpperCase());
+  for (const [k, t] of Object.entries(TYPES)) if (t.group === 'n') h += toolBtn(k, t.label, keyLabel(keymap[k]));
   h += `<h4>Avancés</h4>`;
-  for (const [k, t] of Object.entries(TYPES)) if (t.group === 'x') h += toolBtn(k, t.label, t.key.toUpperCase());
+  for (const [k, t] of Object.entries(TYPES)) if (t.group === 'x') h += toolBtn(k, t.label, keyLabel(keymap[k]));
   $('#palette').innerHTML = h;
   updatePalette();
 }
-const toolBtn = (k, label, key) => `<button class="tool" data-tool="${k}" aria-label="${esc(label)} (${key})">${iconSVG(k)}<span class="lb">${esc(label)}</span><kbd>${key}</kbd></button>`;
+const toolBtn = (k, label, key) => `<button class="tool" data-tool="${k}" aria-label="${esc(label)}${key ? ' (' + esc(key) + ')' : ''}">${iconSVG(k)}<span class="lb">${esc(label)}</span>${key ? `<kbd>${esc(key)}</kbd>` : ''}</button>`;
 const TOOL_HELP = {
   select: { t: 'Sélection', d: 'Clique pour sélectionner un élément et le modifier dans le panneau de droite, glisse pour le déplacer.', x: 'Maj+clic : ajouter à la sélection · Maj+glisser sur le fond : rectangle · Alt+glisser : dupliquer · glisser le fond : déplacer la vue · double-clic : renommer.' },
   res: { t: 'Connexion de ressource', d: 'Fait circuler des ressources d\'un nœud vers un autre. Son étiquette fixe le débit : 3, 2.5, 30%, D6, 1..4, tout, ou une formule.', x: 'Mine → Or avec « 2 » : 2 or à chaque activation.', h: 'Glisse d\'un nœud vers un autre.' },
@@ -2007,9 +2353,9 @@ const ptip = document.createElement('div'); ptip.className = 'ptip'; ptip.setAtt
 let ptipTimer = null;
 function showToolHelp(btn) {
   const k = btn.dataset.tool, info = TOOL_HELP[k]; if (!info) return;
-  const key = k === 'select' ? 'V' : LINKS[k] ? LINKS[k].key : TYPES[k].key.toUpperCase();
-  const how = info.h || (TYPES[k] ? 'Clique sur le canevas pour le placer (Maj+clic ou double-clic sur l\'outil pour en poser plusieurs).' : '');
-  ptip.innerHTML = `<h4><span>${esc(info.t)}${info.en ? ` <i>${esc(info.en)}</i>` : ''}</span><kbd>${key}</kbd></h4><p>${esc(info.d)}</p>` +
+  const key = keyLabel(keymap[k]);
+  const how = info.h || (TYPES[k] ? 'Glisse-le sur le canevas, ou clique ici puis sur le canevas (Maj+clic ou double-clic sur l\'outil pour en poser plusieurs).' : '');
+  ptip.innerHTML = `<h4><span>${esc(info.t)}${info.en ? ` <i>${esc(info.en)}</i>` : ''}</span>${key ? `<kbd>${esc(key)}</kbd>` : ''}</h4><p>${esc(info.d)}</p>` +
     (info.x ? `<div class="ex"><span>${k === 'select' ? 'Astuces' : 'Exemple'}</span>${esc(info.x)}</div>` : '') + (how ? `<div class="how">${esc(how)}</div>` : '') + `<div class="how">Documentation complète : bouton ? de l'inspecteur.</div>`;
   const r = btn.getBoundingClientRect();
   ptip.style.left = (r.right + 10) + 'px'; ptip.style.top = '0px';
@@ -2078,7 +2424,41 @@ function linkError(from, to, link) {
   if (D.edges.some(e => e.from === from && e.to === to && e.kind === kind)) return 'Cette connexion existe déjà.';
   return '';
 }
+/* glisser-déposer un nœud depuis la palette */
+let palDrag = null, suppressPalClick = false;
+$('#palette').addEventListener('pointerdown', ev => {
+  const b = ev.target.closest('[data-tool]'); if (!b || ev.button !== 0) return;
+  const type = b.dataset.tool; if (!TYPES[type] || mode === 'sim') return;
+  palDrag = { type, sx: ev.clientX, sy: ev.clientY, ghost: null, id: ev.pointerId };
+  ev.preventDefault();
+});
+document.addEventListener('pointermove', ev => {
+  if (!palDrag) return;
+  if (!palDrag.ghost) {
+    if (Math.hypot(ev.clientX - palDrag.sx, ev.clientY - palDrag.sy) < 5) return;
+    const gh = document.createElement('div'); gh.className = 'palghost';
+    gh.innerHTML = `<svg viewBox="-34 -34 68 68" width="${Math.round(68 * view.k)}" height="${Math.round(68 * view.k)}" style="overflow:visible">${shape(palDrag.type, 1, 'sh', { gateType: '' })}</svg><span>${esc(TYPES[palDrag.type].label)}</span>`;
+    document.body.appendChild(gh); palDrag.ghost = gh; hideToolHelp();
+  }
+  const r = svg.getBoundingClientRect(), over = ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom;
+  palDrag.ghost.style.left = ev.clientX + 'px'; palDrag.ghost.style.top = ev.clientY + 'px';
+  palDrag.ghost.classList.toggle('out', !over);
+});
+document.addEventListener('pointerup', ev => {
+  if (!palDrag) return;
+  const d = palDrag; palDrag = null;
+  if (!d.ghost) return; // simple clic : géré par « click »
+  d.ghost.remove(); suppressPalClick = true; setTimeout(() => suppressPalClick = false, 0);
+  const r = svg.getBoundingClientRect();
+  if (ev.clientX < r.left || ev.clientX > r.right || ev.clientY < r.top || ev.clientY > r.bottom) { hint('Dépôt annulé : lâche le nœud sur le canevas.'); return; }
+  const w = toWorld(ev), n = makeNode(d.type, snap(w.x), snap(w.y));
+  mutate(() => { D.nodes.push(n); placeInGroup(n); sel = new Set([n.id]); });
+  setTool('select'); hint('');
+  if (n.type === 'text') focusField('text');
+});
+document.addEventListener('pointercancel', () => { if (palDrag && palDrag.ghost) palDrag.ghost.remove(); palDrag = null; });
 $('#palette').addEventListener('click', ev => {
+  if (suppressPalClick) return;
   const b = ev.target.closest('[data-tool]'); if (!b) return;
   if (mode === 'sim') { notify(SIM_LOCK, 'warn'); return; }
   setTool(b.dataset.tool, ev.shiftKey);
@@ -2100,10 +2480,13 @@ svg.addEventListener('pointerdown', ev => {
   document.querySelectorAll('details.dd[open]').forEach(d => d.open = false);
   if (document.activeElement && document.activeElement !== document.body && document.activeElement.blur) document.activeElement.blur();
   const p = toWorld(ev);
-  const nodeEl = ev.target.closest('[data-node]'), edgeEl = ev.target.closest('[data-edge]'), handle = ev.target.closest('[data-handle]');
+  const nodeEl = ev.target.closest('[data-node]'), edgeEl = ev.target.closest('[data-edge]');
+  const wpEl = ev.target.closest('[data-wp]'), insEl = ev.target.closest('[data-ins]');
+  const groupEl = !nodeEl && !edgeEl ? ev.target.closest('[data-group]') : null, gtog = ev.target.closest('[data-gtoggle]'), gres = ev.target.closest('[data-gresize]');
   try { svg.setPointerCapture(ev.pointerId); } catch (e) { /* ignore */ }
   const startPan = () => { drag = { kind: 'pan', sx: ev.clientX, sy: ev.clientY, vx: view.x, vy: view.y, moved: false }; svg.classList.add('panning'); };
   if (ev.button === 1 || spaceDown) { startPan(); return; }
+  if (gtog && ev.button === 0) { toggleCollapse(gtog.dataset.gtoggle); return; }
   if (mode === 'sim') {
     if (nodeEl) simClick(nodeEl.dataset.node, ev.shiftKey || ev.altKey);
     else startPan();
@@ -2118,18 +2501,39 @@ svg.addEventListener('pointerdown', ev => {
     if (nodeEl) { setTool('select'); }
     else {
       const n = makeNode(tool, snap(p.x), snap(p.y));
-      mutate(() => { D.nodes.push(n); sel = new Set([n.id]); });
+      mutate(() => { D.nodes.push(n); placeInGroup(n); sel = new Set([n.id]); });
       if (!(sticky || ev.shiftKey)) setTool('select');
       if (n.type === 'text') focusField('text');
       return;
     }
   }
-  const hitId = nodeEl ? nodeEl.dataset.node : edgeEl ? edgeEl.dataset.edge : null, now = performance.now();
+  if (tool === 'select' && (wpEl || insEl)) {
+    const [eid, k] = (wpEl || insEl).dataset[wpEl ? 'wp' : 'ins'].split(':'), e = edgeById(eid), i = +k;
+    if (!e) return;
+    const now0 = performance.now(), key = 'wp:' + eid + ':' + i;
+    if (wpEl && (ev.altKey || (lastDown.id === key && now0 - lastDown.t < 450))) { lastDown = {}; mutate(() => { e.pts.splice(i, 1); if (!e.pts.length) delete e.pts; }); hint('Point de passage supprimé'); return; }
+    if (wpEl) { lastDown = { id: key, t: now0, x: ev.clientX, y: ev.clientY }; drag = { kind: 'wp', id: eid, i, snap: snapshot(), moved: false, sp: { x: ev.clientX, y: ev.clientY } }; return; }
+    const s0 = snapshot();
+    e.pts = e.pts || []; e.pts.splice(i, 0, { x: snap(p.x), y: snap(p.y) }); pushUndo(s0);
+    drag = { kind: 'wp', id: eid, i, snap: null, moved: true, sp: { x: ev.clientX, y: ev.clientY } };
+    lastDown = {}; render(); renderInspector(); return;
+  }
+  if (gres && tool === 'select') { drag = { kind: 'gresize', id: gres.dataset.gresize, snap: snapshot(), moved: false }; return; }
+  const hitId = nodeEl ? nodeEl.dataset.node : edgeEl ? edgeEl.dataset.edge : groupEl ? groupEl.dataset.group : null, now = performance.now();
   if (tool === 'select' && hitId && !ev.shiftKey && lastDown.id === hitId && now - lastDown.t < 450 && Math.hypot(ev.clientX - lastDown.x, ev.clientY - lastDown.y) < 8) {
     ev.preventDefault(); lastDown = {}; setTimeout(() => startInlineEdit(hitId), 0); return;
   }
   lastDown = { id: hitId, t: now, x: ev.clientX, y: ev.clientY };
-  if (handle) { drag = { kind: 'bend', id: handle.dataset.handle, snap: snapshot(), moved: false }; return; }
+  const labelEl = ev.target.closest('[data-label]');
+  if (labelEl && tool === 'select' && !ev.shiftKey && !ev.altKey) {
+    const n = nodeById(labelEl.dataset.label);
+    if (n) {
+      const lp = labelPos(n);
+      sel = new Set([n.id]);
+      drag = { kind: 'label', id: n.id, off: { x: p.x - n.x - lp.x, y: p.y - n.y - lp.y }, anchor: lp.anchor, snap: snapshot(), moved: false, sp: { x: ev.clientX, y: ev.clientY } };
+      render(); renderInspector(); return;
+    }
+  }
   if (nodeEl) {
     const id = nodeEl.dataset.node;
     if (ev.shiftKey) { sel.has(id) ? sel.delete(id) : sel.add(id); }
@@ -2140,11 +2544,22 @@ svg.addEventListener('pointerdown', ev => {
       for (const nid of map.values()) { const n = nodeById(nid); if (n) orig.set(nid, { x: n.x, y: n.y }); }
       drag = { kind: 'move', start: p, orig, snap: null, moved: true };
     } else drag = { kind: 'move', start: p, orig, snap: snapshot(), moved: false };
+    drag.epts = carriedPts(new Set(drag.orig.keys()));
     render(); renderInspector(); return;
   }
   if (edgeEl) {
     const id = edgeEl.dataset.edge;
     if (ev.shiftKey) { sel.has(id) ? sel.delete(id) : sel.add(id); } else sel = new Set([id]);
+    render(); renderInspector(); return;
+  }
+  if (groupEl && tool === 'select') {
+    const gid = groupEl.dataset.group, g = groupById(gid);
+    if (ev.shiftKey) { sel.has(gid) ? sel.delete(gid) : sel.add(gid); render(); renderInspector(); return; }
+    sel = new Set([gid]);
+    const ids = new Set(descNodes(gid).map(n => n.id)), gs = [g, ...descGroups(gid)];
+    drag = { kind: 'gmove', id: gid, start: p, snap: snapshot(), moved: false,
+      orig: new Map([...ids].map(id => { const n = nodeById(id); return [id, { x: n.x, y: n.y }]; })),
+      gorig: new Map(gs.map(x => [x.id, { x: x.x, y: x.y }])), epts: carriedPts(ids) };
     render(); renderInspector(); return;
   }
   if (ev.shiftKey) { drag = { kind: 'marquee', start: p, cur: p, base: new Set(sel) }; return; }
@@ -2160,16 +2575,47 @@ svg.addEventListener('pointermove', ev => {
       const dx = p.x - drag.start.x, dy = p.y - drag.start.y;
       if (!drag.moved && Math.hypot(dx, dy) * view.k < 3) return;
       drag.moved = true;
-      for (const [id, o] of drag.orig) { const n = nodeById(id); if (n) { n.x = snap(o.x + dx); n.y = snap(o.y + dy); } }
+      for (const [id, o] of drag.orig) { const n = nodeById(id); if (n) { n.x = snap(o.x + dx); n.y = snap(o.y + dy); clampNode(n); } }
+      const sdx = snap(dx), sdy = snap(dy);
+      for (const [eid, orig] of drag.epts || []) { const e = edgeById(eid); if (e) e.pts = orig.map(q => ({ x: q.x + sdx, y: q.y + sdy })); }
       render(); break;
     }
-    case 'bend': {
-      const e = edgeById(drag.id), g = geo.get(drag.id); if (!e || !g) return;
-      const ax = g.A.x, ay = g.A.y, bx = g.Bp.x, by = g.Bp.y;
-      const cx = 2 * p.x - .5 * (ax + bx), cy = 2 * p.y - .5 * (ay + by);
-      e.bend = { dx: Math.round(cx - (ax + bx) / 2), dy: Math.round(cy - (ay + by) / 2) };
-      if (Math.hypot(e.bend.dx, e.bend.dy) < 8) delete e.bend;
-      drag.moved = true; render(); break;
+    case 'gmove': {
+      const g = groupById(drag.id); if (!g) return;
+      let dx = snap(p.x - drag.start.x), dy = snap(p.y - drag.start.y);
+      if (!drag.moved && Math.hypot(p.x - drag.start.x, p.y - drag.start.y) * view.k < 3) return;
+      drag.moved = true;
+      const o = drag.gorig.get(g.id), par = g.parent && groupById(g.parent);
+      if (par) { const r = groupRect(g); dx = Math.min(par.x + par.w - GPAD / 2 - r.w - o.x, Math.max(par.x + GPAD / 2 - o.x, dx)); dy = Math.min(par.y + par.h - GPAD / 2 - r.h - o.y, Math.max(par.y + GHEAD - o.y, dy)); }
+      for (const [id, q] of drag.gorig) { const x = groupById(id); if (x) { x.x = q.x + dx; x.y = q.y + dy; } }
+      for (const [id, q] of drag.orig) { const n = nodeById(id); if (n) { n.x = q.x + dx; n.y = q.y + dy; } }
+      for (const [eid, orig] of drag.epts) { const e = edgeById(eid); if (e) e.pts = orig.map(q => ({ x: q.x + dx, y: q.y + dy })); }
+      render(); break;
+    }
+    case 'gresize': {
+      const g = groupById(drag.id); if (!g) return;
+      drag.moved = true;
+      const b = contentBox(g.id), minW = b ? b.x1 + GPAD / 2 - g.x : 120, minH = b ? b.y1 + GPAD / 2 - g.y : 80;
+      g.w = Math.max(120, minW, snap(p.x - g.x)); g.h = Math.max(70, minH, snap(p.y - g.y));
+      const par = g.parent && groupById(g.parent);
+      if (par) { g.w = Math.min(g.w, Math.max(minW, par.x + par.w - GPAD / 2 - g.x)); g.h = Math.min(g.h, Math.max(minH, par.y + par.h - GPAD / 2 - g.y)); }
+      render(); break;
+    }
+    case 'label': {
+      const n = nodeById(drag.id); if (!n) return;
+      if (!drag.moved && Math.hypot(ev.clientX - drag.sp.x, ev.clientY - drag.sp.y) < 3) return;
+      drag.moved = true;
+      let lx = p.x - n.x - drag.off.x, ly = p.y - n.y - drag.off.y;
+      if (drag.anchor !== 'middle') { const el = document.querySelector(`[data-label="${n.id}"]`); const w = el ? el.getBBox().width : 0; lx += drag.anchor === 'end' ? -w / 2 : w / 2; drag.anchor = 'middle'; drag.off.x = p.x - n.x - lx; }
+      n.lx = Math.round(lx); n.ly = Math.round(ly); delete n.lpos;
+      render(); break;
+    }
+    case 'wp': {
+      const e = edgeById(drag.id); if (!e || !e.pts || !e.pts[drag.i]) return;
+      if (!drag.moved && Math.hypot(ev.clientX - drag.sp.x, ev.clientY - drag.sp.y) < 3) return;
+      drag.moved = true;
+      e.pts[drag.i] = { x: ev.altKey ? Math.round(p.x) : snap(p.x), y: ev.altKey ? Math.round(p.y) : snap(p.y) };
+      render(); break;
     }
     case 'connect': {
       const a = nodeById(drag.from); if (!a) return;
@@ -2191,7 +2637,8 @@ svg.addEventListener('pointermove', ev => {
       const x = Math.min(drag.start.x, p.x), y = Math.min(drag.start.y, p.y), w = Math.abs(p.x - drag.start.x), h = Math.abs(p.y - drag.start.y);
       $('#overlay').innerHTML = `<rect class="marq" x="${x}" y="${y}" width="${w}" height="${h}"/>`;
       sel = new Set(drag.base);
-      for (const n of D.nodes) if (n.x >= x && n.x <= x + w && n.y >= y && n.y <= y + h) sel.add(n.id);
+      for (const n of D.nodes) if (!hiddenBy(n) && n.x >= x && n.x <= x + w && n.y >= y && n.y <= y + h) sel.add(n.id);
+      for (const g of D.groups) { if (groupHidden(g)) continue; const r = groupRect(g); if (r.x >= x && r.y >= y && r.x + r.w <= x + w && r.y + r.h <= y + h) { sel.add(g.id); descNodes(g.id).forEach(n => sel.delete(n.id)); } }
       for (const e of D.edges) { const g = geo.get(e.id); if (g && sel.has(e.from) && (sel.has(e.to)) ) sel.add(e.id); }
       render(); break;
     }
@@ -2205,7 +2652,7 @@ function endDrag(ev) {
   document.querySelectorAll('.droptarget,.dropbad').forEach(x => x.classList.remove('droptarget', 'dropbad'));
   svg.classList.remove('nodrop');
   if (d.kind === 'pan') { scheduleSave(); return; }
-  if (d.kind === 'move' || d.kind === 'bend') { if (d.moved) { if (d.snap) pushUndo(d.snap); changed(); } return; }
+  if (d.kind === 'move' || d.kind === 'wp' || d.kind === 'label' || d.kind === 'gmove' || d.kind === 'gresize') { if (d.moved) { if (d.snap) pushUndo(d.snap); changed(); } return; }
   if (d.kind === 'marquee') { renderInspector(); return; }
   if (d.kind === 'connect' && ev) {
     const h = hitAt(ev);
@@ -2222,15 +2669,16 @@ function nameOffset(n) {
 }
 function startInlineEdit(id) {
   closeInline(true);
-  const n = nodeById(id), e = !n && edgeById(id); if (!n && !e) return;
+  const n = nodeById(id), e = !n && edgeById(id), grp = !n && !e && groupById(id); if (!n && !e && !grp) return;
   sel = new Set([id]); render(); renderInspector();
-  const isNote = !!n && n.type === 'text', key = n ? (isNote ? 'text' : 'name') : 'label', obj = n || e;
+  const isNote = !!n && n.type === 'text', key = n || grp ? (isNote ? 'text' : 'name') : 'label', obj = n || e || grp;
   const el = document.createElement(isNote ? 'textarea' : 'input');
   el.className = 'inline-edit' + (e ? ' code' : '');
   el.value = obj[key] ?? ''; el.spellcheck = false;
   if (e && e.kind === 'resource') el.placeholder = '1';
   let wx, wy;
-  if (n) { wx = n.x; wy = isNote ? n.y : n.y + nameOffset(n); } else { const g = geo.get(id); if (!g) return; wx = g.mid.x; wy = g.mid.y; }
+  if (grp) { wx = grp.x + 34 + 80 / view.k; wy = grp.y + (grp.collapsed ? 17 : 14); }
+  else if (n) { wx = n.x; wy = isNote ? n.y : n.y + nameOffset(n); } else { const g = geo.get(id); if (!g) return; wx = g.mid.x; wy = g.mid.y; }
   const sx = wx * view.k + view.x, sy = wy * view.k + view.y;
   const w = isNote ? Math.max(180, noteWidth(n) * view.k + 40) : e ? 120 : 160;
   const h = isNote ? Math.max(48, noteHeight(n) * view.k + 24) : 26;
@@ -2248,7 +2696,7 @@ function startInlineEdit(id) {
 }
 function closeInline(commit) {
   const ie = inlineEd; if (!ie) return; inlineEd = null;
-  const obj = nodeById(ie.id) || edgeById(ie.id);
+  const obj = nodeById(ie.id) || edgeById(ie.id) || groupById(ie.id);
   if (obj) {
     let v = commit ? ie.el.value : ie.orig;
     if (commit && ie.key === 'name') v = v.trim() || ie.orig;
@@ -2280,17 +2728,167 @@ function createEdge(from, to, link) {
   const rev = D.edges.find(x => x.from === to && x.to === from);
   if (rev && tgtNode) {
     const dx = tgtNode.x - src.x, dy = tgtNode.y - src.y, L = Math.hypot(dx, dy) || 1;
-    e.bend = { dx: Math.round(-dy / L * 28), dy: Math.round(dx / L * 28) };
-    if (!rev.bend) rev.bend = { dx: Math.round(dy / L * 28), dy: Math.round(-dx / L * 28) };
+    const mx = (src.x + tgtNode.x) / 2, my = (src.y + tgtNode.y) / 2;
+    e.pts = [{ x: Math.round(mx - dy / L * 14), y: Math.round(my + dx / L * 14) }]; e.smooth = true;
+    if (!rev.pts || !rev.pts.length) { rev.pts = [{ x: Math.round(mx + dy / L * 14), y: Math.round(my - dx / L * 14) }]; rev.smooth = true; }
   }
   if (!tgtNode) { // vers une connexion : on courbe pour ne pas recouvrir les lignes existantes
     const g = geo.get(to);
-    if (g) { const dx = g.mid.x - src.x, dy = g.mid.y - src.y, L = Math.hypot(dx, dy) || 1; e.bend = { dx: Math.round(-dy / L * 45), dy: Math.round(dx / L * 45) }; if (e.bend.dy > 0) e.bend = { dx: -e.bend.dx, dy: -e.bend.dy }; }
+    if (g) { const dx = g.mid.x - src.x, dy = g.mid.y - src.y, L = Math.hypot(dx, dy) || 1; let ox = -dy / L * 22, oy = dx / L * 22; if (oy > 0) { ox = -ox; oy = -oy; } e.pts = [{ x: Math.round((src.x + g.mid.x) / 2 + ox), y: Math.round((src.y + g.mid.y) / 2 + oy) }]; e.smooth = true; }
   }
   mutate(() => { D.edges.push(e); sel = new Set([e.id]); });
   if (kind === 'state') focusField('label');
 }
 function focusField(k) { setTimeout(() => { const el = document.querySelector(`#inspector [data-k="${k}"]`); if (el) { el.focus(); if (el.select) el.select(); } }, 0); }
+
+/* points de passage emportés quand les deux bouts d'une connexion bougent ensemble */
+function carriedPts(ids) {
+  const m = new Map();
+  const inside = to => ids.has(to) || (() => { const te = edgeById(to); return te && ids.has(te.from) && (ids.has(te.to) || !!edgeById(te.to)); })();
+  for (const e of D.edges) if (e.pts && e.pts.length && ids.has(e.from) && inside(e.to)) m.set(e.id, e.pts.map(q => ({ x: q.x, y: q.y })));
+  return m;
+}
+/* ======================= GROUPES ======================= */
+const GPAD = 18, GHEAD = 26, GBOX_H = 50;
+const groupById = id => (D.groups || []).find(g => g.id === id);
+const isGroup = id => !!groupById(id);
+const childGroups = gid => D.groups.filter(g => (g.parent || null) === gid);
+const directNodes = gid => D.nodes.filter(n => (n.group || null) === gid);
+function descGroups(gid) { const out = []; const walk = id => { for (const c of childGroups(id)) { out.push(c); walk(c.id); } }; walk(gid); return out; }
+function descNodes(gid) { const ids = new Set([gid, ...descGroups(gid).map(g => g.id)]); return D.nodes.filter(n => n.group && ids.has(n.group)); }
+function groupAncestors(gid) { const out = []; let g = groupById(gid), guard = 0; while (g && guard++ < 50) { out.push(g); g = g.parent ? groupById(g.parent) : null; } return out; }
+const groupDepth = g => groupAncestors(g.id).length - 1;
+/* groupe réduit le plus extérieur qui cache un nœud ou un groupe (null s'il est visible) */
+function collapsedRootOfGroup(gid) { let root = null; for (const g of groupAncestors(gid)) if (g.collapsed) root = g; return root; }
+const hiddenBy = n => n.group ? collapsedRootOfGroup(n.group) : null;
+const groupHidden = g => g.parent ? !!collapsedRootOfGroup(g.parent) : false;
+function boxSize(g) { return { w: Math.max(150, (g.name || '').length * 7.5 + 62), h: GBOX_H }; }
+function groupRect(g) { if (g.collapsed) { const b = boxSize(g); return { x: g.x, y: g.y, w: b.w, h: b.h }; } return { x: g.x, y: g.y, w: g.w, h: g.h }; }
+function nodeBox(n) {
+  if (n.type === 'text') { const w = noteWidth(n) / 2 + 8, h = noteHeight(n) / 2 + 6; return { x0: n.x - w, y0: n.y - h, x1: n.x + w, y1: n.y + h }; }
+  const lp = labelPos(n), lw = ((n.name || '').length * 3.6 + 4);
+  return { x0: Math.min(n.x - R - 6, n.x + lp.x - (lp.anchor === 'start' ? 0 : lp.anchor === 'end' ? lw * 2 : lw)), x1: Math.max(n.x + R + 6, n.x + lp.x + (lp.anchor === 'end' ? 0 : lp.anchor === 'start' ? lw * 2 : lw)), y0: Math.min(n.y - R - 6, n.y + lp.y - 12), y1: Math.max(n.y + R + 6, n.y + lp.y + 5) };
+}
+/* boîte englobante du contenu direct d'un groupe (nœuds + sous-groupes) */
+function contentBox(gid) {
+  let b = null; const add = r => { b = b ? { x0: Math.min(b.x0, r.x0), y0: Math.min(b.y0, r.y0), x1: Math.max(b.x1, r.x1), y1: Math.max(b.y1, r.y1) } : Object.assign({}, r); };
+  for (const n of directNodes(gid)) add(nodeBox(n));
+  for (const c of childGroups(gid)) { const r = groupRect(c); add({ x0: r.x, y0: r.y, x1: r.x + r.w, y1: r.y + r.h }); }
+  return b;
+}
+function fitGroup(g) {
+  const b = contentBox(g.id); if (!b) { g.w = g.w || 200; g.h = g.h || 120; return; }
+  g.x = Math.floor((b.x0 - GPAD) / GRID) * GRID; g.y = Math.floor((b.y0 - GPAD - GHEAD) / GRID) * GRID;
+  g.w = Math.ceil((b.x1 + GPAD - g.x) / GRID) * GRID; g.h = Math.ceil((b.y1 + GPAD - g.y) / GRID) * GRID;
+}
+/* agrandit les groupes parents pour qu'ils contiennent toujours leurs enfants */
+function growAncestors(g) {
+  let c = g, guard = 0;
+  while (c.parent && guard++ < 50) {
+    const p = groupById(c.parent); if (!p) break;
+    const r = groupRect(c), x1 = Math.max(p.x + p.w, r.x + r.w + GPAD), y1 = Math.max(p.y + p.h, r.y + r.h + GPAD);
+    const x0 = Math.min(p.x, r.x - GPAD), y0 = Math.min(p.y, r.y - GPAD - GHEAD);
+    p.x = x0; p.y = y0; p.w = x1 - x0; p.h = y1 - y0; c = p;
+  }
+}
+/* garde un nœud à l'intérieur du cadre de son groupe */
+function clampNode(n) {
+  const g = n.group && groupById(n.group); if (!g) return;
+  const b = nodeBox(n), lx = n.x - b.x0, rx = b.x1 - n.x, ty = n.y - b.y0, by = b.y1 - n.y, m = 6;
+  const minX = g.x + lx + m, maxX = g.x + g.w - rx - m, minY = g.y + GHEAD + ty, maxY = g.y + g.h - by - m;
+  n.x = minX > maxX ? Math.round(g.x + g.w / 2) : Math.min(maxX, Math.max(minX, n.x));
+  n.y = minY > maxY ? Math.round(g.y + (g.h + GHEAD) / 2) : Math.min(maxY, Math.max(minY, n.y));
+}
+/* groupe déplié le plus profond qui contient un point (pour y ranger un nouveau nœud) */
+function groupAt(x, y) {
+  let best = null;
+  for (const g of D.groups) { if (g.collapsed || groupHidden(g)) continue; if (x >= g.x && x <= g.x + g.w && y >= g.y + GHEAD * .5 && y <= g.y + g.h) if (!best || groupDepth(g) > groupDepth(best)) best = g; }
+  return best;
+}
+function placeInGroup(n) { const g = groupAt(n.x, n.y); if (g) { n.group = g.id; clampNode(n); } }
+/* point d'ancrage visible d'un nœud : lui-même, ou la boîte du groupe réduit qui le cache */
+function anchorOf(id) {
+  const n = nodeById(id); if (!n) return null;
+  const root = hiddenBy(n); if (!root) return n;
+  const r = groupRect(root);
+  return { id: root.id, type: 'groupbox', x: r.x + r.w / 2, y: r.y + r.h / 2, bw: r.w, bh: r.h };
+}
+function expandAncestorsOf(id) { const n = nodeById(id); let changedAny = false; if (n && n.group) for (const g of groupAncestors(n.group)) if (g.collapsed) { g.collapsed = false; changedAny = true; } return changedAny; }
+function newGroupName() { const names = new Set(D.groups.map(g => g.name)); let k = 1; while (names.has('Groupe ' + k)) k++; return 'Groupe ' + k; }
+
+function groupSel() {
+  if (mode === 'sim') { notify(SIM_LOCK, 'warn'); return; }
+  const nodes = [...sel].map(nodeById).filter(Boolean), groups = [...sel].map(groupById).filter(Boolean);
+  if (!nodes.length && !groups.length) { notify('Rien à grouper : sélectionne des nœuds ou des groupes (Maj+clic, ou Maj+glisser pour un rectangle).', 'warn'); return; }
+  const parents = new Set([...nodes.map(n => n.group || null), ...groups.map(g => g.parent || null)]);
+  if (parents.size > 1) { notify('Les éléments sélectionnés appartiennent à des groupes différents. Sélectionne des éléments d\'un même groupe (ou hors de tout groupe).', 'error'); return; }
+  const parent = [...parents][0];
+  mutate(() => {
+    const g = { id: uid('g'), name: newGroupName(), parent: parent || null, x: 0, y: 0, w: 200, h: 120 };
+    D.groups.push(g);
+    nodes.forEach(n => n.group = g.id); groups.forEach(c => c.parent = g.id);
+    fitGroup(g); growAncestors(g);
+    sel = new Set([g.id]);
+  });
+  notify('Groupe créé (' + nodes.length + ' nœud' + (nodes.length > 1 ? 's' : '') + (groups.length ? ', ' + groups.length + ' groupe' + (groups.length > 1 ? 's' : '') : '') + ')');
+}
+function ungroupSel() {
+  if (mode === 'sim') { notify(SIM_LOCK, 'warn'); return; }
+  let targets = [...sel].map(groupById).filter(Boolean);
+  if (!targets.length) targets = [...new Set([...sel].map(nodeById).filter(n => n && n.group).map(n => n.group))].map(groupById).filter(Boolean);
+  if (!targets.length) { notify('Rien à dégrouper : sélectionne un groupe (clique sur son cadre) ou un nœud qui en fait partie.', 'warn'); return; }
+  const freed = [];
+  mutate(() => {
+    for (const g of targets) {
+      for (const n of directNodes(g.id)) { if (g.parent) n.group = g.parent; else delete n.group; freed.push(n.id); }
+      for (const c of childGroups(g.id)) { c.parent = g.parent || null; freed.push(c.id); }
+      D.groups = D.groups.filter(x => x !== g);
+    }
+    sel = new Set(freed);
+  });
+  notify(targets.length > 1 ? targets.length + ' groupes défaits' : 'Groupe défait');
+}
+function toggleCollapse(gid, force) {
+  const g = groupById(gid); if (!g) return;
+  const v = force != null ? force : !g.collapsed;
+  if (mode === 'sim') { g.collapsed = v; render(); scheduleSave(); return; }
+  mutate(() => { g.collapsed = v; if (!v) growAncestors(g); });
+}
+function toggleCollapseSel() {
+  let gs = [...sel].map(groupById).filter(Boolean);
+  if (!gs.length) gs = [...new Set([...sel].map(nodeById).filter(n => n && n.group).map(n => n.group))].map(groupById).filter(Boolean);
+  if (!gs.length) { notify('Sélectionne d\'abord un groupe à réduire ou agrandir.', 'warn'); return; }
+  const v = !gs[0].collapsed;
+  if (mode === 'sim') { gs.forEach(g => g.collapsed = v); render(); scheduleSave(); return; }
+  mutate(() => gs.forEach(g => { g.collapsed = v; }));
+}
+function groupsSVG(simErr) {
+  let h = '';
+  const list = D.groups.filter(g => !groupHidden(g)).sort((a, b) => groupDepth(a) - groupDepth(b));
+  for (const g of list) {
+    const seld = sel.has(g.id), st = [g.color ? '--gc:' + g.color : '', g.fill ? '--gf:' + g.fill : '', '--go:' + ((g.fillOpacity ?? (g.fill ? 18 : 0)) / 100)].filter(Boolean).join(';');
+    const cls = ['grp', g.collapsed ? 'collapsed' : '', seld ? 'sel' : '', g.color ? 'gcol' : '', g.fill ? 'gfill' : ''].filter(Boolean).join(' ');
+    const desc = descNodes(g.id).filter(n => n.type !== 'text');
+    if (g.collapsed) {
+      const b = boxSize(g);
+      const bad = mode !== 'sim' && desc.some(n => staticErrors.has(n.id)), warnd = mode !== 'sim' && !bad && desc.some(n => staticWarnings.has(n.id));
+      const failed = mode === 'sim' && sim && desc.some(n => sim.S.fail.get(n.id));
+      h += `<g class="${cls}" data-group="${g.id}" transform="translate(${g.x},${g.y})" style="${esc(st)}"><title>${esc(g.name)} — groupe réduit (${desc.length} nœuds). Double-clic sur ▸ ou bouton pour agrandir.</title>`
+        + `<rect class="gbox" width="${b.w}" height="${b.h}" rx="10"/><rect class="gbox2" x="4" y="4" width="${b.w - 8}" height="${b.h - 8}" rx="7"/>`
+        + `<text class="gname" x="34" y="21">${esc(g.name)}</text><text class="gsub" x="34" y="37">${desc.length} nœud${desc.length > 1 ? 's' : ''}${childGroups(g.id).length ? ' · ' + childGroups(g.id).length + ' sous-groupe' + (childGroups(g.id).length > 1 ? 's' : '') : ''}</text>`
+        + `<g class="gtoggle" data-gtoggle="${g.id}" transform="translate(17,${b.h / 2})"><title>Agrandir le groupe</title><circle r="10"/><path d="M-2.5,-5 L3.5,0 L-2.5,5"/></g>`
+        + (bad || warnd || failed ? `<g class="${bad || failed ? 'xbadge' : 'wbadge'}" transform="translate(${b.w - 4},4)"><circle r="8"/><text y="0.5">!</text></g>` : '')
+        + `</g>`;
+    } else {
+      h += `<g class="${cls}" data-group="${g.id}" style="${esc(st)}"><rect class="gframe" x="${g.x}" y="${g.y}" width="${g.w}" height="${g.h}" rx="12"/>`
+        + `<text class="gname" x="${g.x + 34}" y="${g.y + 18}">${esc(g.name)}</text>`
+        + `<g class="gtoggle" data-gtoggle="${g.id}" transform="translate(${g.x + 17},${g.y + 13})"><title>Réduire le groupe</title><circle r="9"/><path d="M-4.5,-2 L0,3 L4.5,-2"/></g>`
+        + (seld && sel.size === 1 && mode !== 'sim' ? `<g class="gresize" data-gresize="${g.id}" transform="translate(${g.x + g.w},${g.y + g.h})"><title>Redimensionner</title><rect x="-9" y="-9" width="11" height="11" rx="2"/></g>` : '')
+        + `</g>`;
+    }
+  }
+  return h;
+}
 
 /* ---------- édition : suppression, copie ---------- */
 function deleteSel() {
@@ -2298,6 +2896,8 @@ function deleteSel() {
   if (!sel.size) { notify('Rien à supprimer : sélectionne d\'abord un élément.', 'warn'); return; }
   mutate(() => {
     const gone = new Set(sel);
+    for (const id of [...gone]) if (isGroup(id)) { descGroups(id).forEach(g => gone.add(g.id)); descNodes(id).forEach(n => gone.add(n.id)); }
+    D.groups = D.groups.filter(g => !gone.has(g.id));
     D.nodes = D.nodes.filter(n => !gone.has(n.id));
     let changedSet = true;
     while (changedSet) { changedSet = false; for (const e of D.edges) if (!gone.has(e.id) && (gone.has(e.from) || gone.has(e.to))) { gone.add(e.id); changedSet = true; } }
@@ -2317,8 +2917,9 @@ function paste(data, offset) {
   const map = new Map();
   const names = new Set(D.nodes.map(n => n.name));
   for (const n of data.nodes) { const nn = Object.assign({}, n, { id: uid('n'), x: n.x + offset, y: n.y + offset }); if (nn.name && names.has(nn.name)) { let k = 2; const b = nn.name.replace(/ \(\d+\)$/, ''); while (names.has(b + ' (' + k + ')')) k++; nn.name = b + ' (' + k + ')'; } names.add(nn.name); map.set(n.id, nn.id); D.nodes.push(nn); }
+  for (const nid of map.values()) { const n = nodeById(nid); if (n && n.group) { const g = groupById(n.group); if (!g || hiddenBy(n)) delete n.group; else clampNode(n); } }
   for (const e of data.edges) map.set(e.id, uid('e'));
-  for (const e of data.edges) D.edges.push(Object.assign({}, e, { id: map.get(e.id), from: map.get(e.from), to: map.get(e.to) }));
+  for (const e of data.edges) D.edges.push(Object.assign({}, e, { id: map.get(e.id), from: map.get(e.from), to: map.get(e.to) }, e.pts ? { pts: e.pts.map(q => ({ x: q.x + offset, y: q.y + offset })) } : {}));
   sel = new Set(map.values());
   return map;
 }
@@ -2330,9 +2931,11 @@ function pasteClip() { if (mode === 'sim') { notify(SIM_LOCK, 'warn'); return; }
 let probIdx = 0;
 function gotoItem(id) {
   if (id.startsWith('var:')) { sel.clear(); render(); renderInspector(); const i = +id.slice(4); setTimeout(() => { const el = insp.querySelector(`[data-list="vars"][data-i="${i}"][data-lk="expr"]`); if (el) { el.focus(); el.scrollIntoView({ block: 'center' }); } }, 0); return; }
-  if (!nodeById(id) && !edgeById(id)) return;
+  if (!nodeById(id) && !edgeById(id) && !isGroup(id)) return;
+  const ed = edgeById(id);
+  if (expandAncestorsOf(id) | (ed ? expandAncestorsOf(ed.from) | (nodeById(ed.to) ? expandAncestorsOf(ed.to) : false) : false)) { scheduleSave(); render(); }
   sel = new Set([id]);
-  let p = null; const n = nodeById(id); if (n) p = { x: n.x, y: n.y }; else { const g = geo.get(id); if (g) p = g.mid; }
+  let p = null; const n = nodeById(id), gg = groupById(id); if (n) p = { x: n.x, y: n.y }; else if (gg) { const r = groupRect(gg); p = { x: r.x + r.w / 2, y: r.y + r.h / 2 }; } else { const g = geo.get(id); if (g) p = g.mid; }
   if (p) { const r = svg.getBoundingClientRect(); const sx = p.x * view.k + view.x, sy = p.y * view.k + view.y; if (sx < 60 || sy < 60 || sx > r.width - 60 || sy > r.height - 60) { view.x = r.width / 2 - p.x * view.k; view.y = r.height / 2 - p.y * view.k; } }
   render(); renderInspector();
   flashDeny(n ? `[data-node="${id}"]` : `[data-edge="${id}"]`);
@@ -2354,16 +2957,33 @@ function renderInspector() {
   const ids = [...sel];
   if (ids.length === 0) { insp.innerHTML = diagramInspector(); return; }
   if (ids.length > 1) {
-    const nodes = ids.map(nodeById).filter(Boolean);
+    const nodes = ids.map(nodeById).filter(Boolean), ngr = ids.filter(isGroup).length;
     insp.innerHTML = `<h3>${ids.length} éléments sélectionnés</h3>
-      <div class="note">${nodes.length} nœud(s), ${ids.length - nodes.length} connexion(s).</div>
+      <div class="note">${nodes.length} nœud(s), ${ngr ? ngr + ' groupe(s), ' : ''}${ids.length - nodes.length - ngr} connexion(s).</div>
+      ${nodes.length || ngr ? `<button class="btn" data-act="group" style="border-color:var(--line);width:100%;margin-bottom:10px">▣ Grouper${keymap.group ? ' (' + esc(keyLabel(keymap.group)) + ')' : ''}</button>` : ''}
+      ${nodes.length ? colorField(nodes.every(n => n.color === nodes[0].color) ? nodes[0].color : '__', 'color', 'Bordure (tous)', true) : ''}
+      ${nodes.some(n => n.type !== 'text') ? colorField(nodes.every(n => n.fill === nodes[0].fill) ? nodes[0].fill : '__', 'fill', 'Remplissage (tous)', true) : ''}
       ${nodes.some(n => HAS_MODE.has(n.type)) ? field('Mode d\'activation (tous)', `<select data-multi="mode"><option value="">—</option>${MODES.map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select>`) : ''}
       <div class="grid2"><button class="btn" data-act="alignH" style="border-color:var(--line)">Aligner ↔</button><button class="btn" data-act="alignV" style="border-color:var(--line)">Aligner ↕</button></div>
       <div class="grid2" style="margin-top:8px"><button class="btn" data-act="dup" style="border-color:var(--line)">Dupliquer</button><button class="btn danger" data-act="del" style="border-color:var(--line)">Supprimer</button></div>`;
     return;
   }
-  const n = nodeById(ids[0]);
-  insp.innerHTML = n ? nodeInspector(n) : edgeInspector(edgeById(ids[0]));
+  const n = nodeById(ids[0]), g = groupById(ids[0]);
+  insp.innerHTML = n ? nodeInspector(n) : g ? groupInspector(g) : edgeInspector(edgeById(ids[0]));
+}
+function groupInspector(g) {
+  const nodes = descNodes(g.id).filter(n => n.type !== 'text'), direct = directNodes(g.id), kids = childGroups(g.id), par = g.parent && groupById(g.parent);
+  const inner = new Set(descNodes(g.id).map(n => n.id));
+  const io = D.edges.filter(e => inner.has(e.from) !== (inner.has(e.to) || (edgeById(e.to) && inner.has(edgeById(e.to).from))));
+  let h = `<h3><svg viewBox="0 0 26 26" width="26" height="26"><rect x="2" y="4" width="22" height="18" rx="4" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-dasharray="3 2"/></svg>Groupe${helpLink('groups')}</h3>`;
+  h += field('Nom', inp('name', g.name), 'Double-clic sur le titre du cadre pour le renommer sur place.');
+  h += `<div class="note">${direct.length} nœud${direct.length > 1 ? 's' : ''} direct${direct.length > 1 ? 's' : ''}${kids.length ? ', ' + kids.length + ' sous-groupe' + (kids.length > 1 ? 's' : '') : ''} · ${nodes.length} nœud${nodes.length > 1 ? 's' : ''} au total · ${io.length} connexion${io.length > 1 ? 's' : ''} qui entre${io.length > 1 ? 'nt' : ''} ou sort${io.length > 1 ? 'ent' : ''}${par ? '<br>Dans le groupe « ' + esc(par.name) + ' »' : ''}</div>`;
+  h += `<div class="grid2"><button class="btn" data-act="gcollapse" style="border-color:var(--line)">${g.collapsed ? '▸ Agrandir' : '▾ Réduire'}</button><button class="btn" data-act="gfit" style="border-color:var(--line)" ${g.collapsed ? 'disabled' : ''}>Ajuster au contenu</button></div>`;
+  h += `<div class="grid2" style="margin-top:8px"><button class="btn" data-act="ungroup" style="border-color:var(--line)">Dégrouper${keymap.ungroup ? ' (' + esc(keyLabel(keymap.ungroup)) + ')' : ''}</button><button class="btn danger" data-act="del" style="border-color:var(--line)" title="Supprime le cadre et tout son contenu">Supprimer tout</button></div>`;
+  h += `<h5>Apparence</h5>` + colorField(g.color, 'color', 'Contour') + colorField(g.fill, 'fill', 'Fond');
+  h += field('Opacité du fond (%)', `<input type="range" data-k="fillOpacity" data-num min="0" max="100" step="5" value="${g.fillOpacity ?? (g.fill ? 18 : 0)}" style="width:100%">`, g.fill ? '' : 'Choisis une couleur de fond pour qu\'elle s\'applique.');
+  h += `<div class="desc muted" style="font-size:11.5px;margin-top:6px">Glisse le cadre pour le déplacer avec son contenu ; poignée en bas à droite pour le redimensionner. Les nœuds du groupe restent à l'intérieur du cadre.</div>`;
+  return h;
 }
 function problemsHTML(id) {
   let h = '';
@@ -2375,14 +2995,20 @@ const helpLink = sec => `<button class="qhelp" data-help="${sec}" title="Documen
 function nodeInspector(n) {
   const t = n.type;
   let h = `<h3><svg viewBox="-34 -34 68 68" style="overflow:visible">${shape(t, 1.1, 'sh', n)}</svg>${TYPES[t].label}${helpLink('node-' + t)}</h3>` + problemsHTML(n.id);
+  if (n.group && groupById(n.group)) h += `<div class="note" style="display:flex;align-items:center;gap:6px">Dans le groupe <b>${esc(groupById(n.group).name)}</b><button class="btn" data-goto="${n.group}" style="margin-left:auto;border-color:var(--line);padding:2px 8px;font-size:12px">Sélectionner</button></div>`;
   if (t === 'text') {
     h += field('Texte', `<textarea data-k="text" rows="4">${esc(n.text)}</textarea>`);
     h += field('Taille', `<input type="number" data-k="size" data-num min="8" max="48" value="${n.size || 14}">`);
+    h += colorField(n.color, 'color', 'Couleur du texte');
     return h + footerBtns();
   }
   const dup = n.name && D.nodes.some(o => o !== n && o.name && Engine.norm(o.name) === Engine.norm(n.name));
   h += field('Nom', inp('name', n.name), dup ? 'Un autre nœud porte déjà ce nom : les formules ne sauront pas lequel utiliser.' : `Dans une formule : <code>${esc(refName(n.name))}</code>`, dup);
-  h += field('Type de nœud', `<select data-k="type">${Object.entries(TYPES).filter(([k]) => k !== 'text').map(([k, v]) => `<option value="${k}"${k === t ? ' selected' : ''}>${v.label}</option>`).join('')}</select>`);
+  const curPos = n.lx != null ? 'free' : (n.lpos || 'below');
+  h += `<label class="f"><span>Position du nom</span><div class="seg lpos">` + [['above', 'Dessus'], ['below', 'Dessous'], ['left', 'Gauche'], ['right', 'Droite']].map(([v, l]) => `<button type="button" data-labelpos="${v}" aria-pressed="${curPos === v}">${l}</button>`).join('') + `</div><div class="desc muted" style="font-size:11.5px">${curPos === 'free' ? 'Position libre (déplacée à la souris). Choisis un préréglage pour la réinitialiser.' : 'Ou glisse le nom directement sur le canevas.'}</div></label>`;
+  h += `<h5>Apparence</h5>` + colorField(n.color, 'color', 'Bordure') + colorField(n.fill, 'fill', 'Remplissage', false, 'Par défaut (léger reflet de la bordure)');
+  if (t === 'pool') h += chk('dynFill', n.dynFill, 'Remplissage dynamique selon le contenu') + `<div class="desc muted" style="font-size:11.5px;margin:-4px 0 8px">${n.dynFill ? (hasCap(n) ? 'Le réservoir se remplit de bas en haut proportionnellement à sa capacité (' + esc(n.capacity) + '), en couches de la couleur de chaque type.' : 'Sans capacité, le réservoir est entièrement coloré dès qu\'il contient quelque chose, en couches proportionnelles à chaque type.') : 'Le fond se remplit avec la couleur des types de ressources contenus.'}</div>`;
+  h += `<h5>Nœud</h5>` + field('Type de nœud', `<select data-k="type">${Object.entries(TYPES).filter(([k]) => k !== 'text').map(([k, v]) => `<option value="${k}"${k === t ? ' selected' : ''}>${v.label}</option>`).join('')}</select>`);
   if (HAS_MODE.has(t)) {
     h += `<h5>Activation</h5>` + seg('mode', n.mode, MODES);
     if (n.mode === 'interactive') h += field('Joueur simulé : probabilité d\'activer à chaque pas', `<input type="number" data-k="aiProb" data-num min="0" max="100" value="${n.aiProb ?? 50}">`, 'Utilisée par les statistiques et l\'option « Joueur simulé ».');
@@ -2390,8 +3016,15 @@ function nodeInspector(n) {
   if (t === 'pool') {
     h += seg('flow', n.flow || 'pull', [['pull', 'Tirer'], ['push', 'Pousser']]);
     h += seg('all', n.all ? 1 : 0, [[0, 'Partiel'], [1, 'Tout ou rien (&)']]);
-    h += `<h5>Contenu</h5><div class="grid2">` + field('Ressources initiales', `<input type="number" data-k="start" data-num min="0" value="${esc(n.start ?? 0)}">`) + field('Capacité', `<input type="number" data-k="capacity" min="0" placeholder="∞" value="${esc(n.capacity ?? '')}">`) + `</div>`;
-    if (D.resourceTypes.length > 1) h += field('Type des ressources initiales', `<select data-k="rtype">${typeOptions(n.rtype || D.resourceTypes[0].id, false)}</select>`);
+    if (D.resourceTypes.length > 1) {
+      const ini = initialContents(n);
+      h += `<h5>Contenu initial</h5><div class="mixrows">` + D.resourceTypes.map(rt => `<label class="mixrow"><span class="tdot" style="background:${rt.color}"></span><span class="mixname">${esc(rt.name)}</span><input type="number" min="0" data-mix="${rt.id}" value="${ini[rt.id] || 0}"></label>`).join('') + `</div>`;
+      h += `<div class="grid2">` + field('Total', `<input type="text" disabled value="${Object.values(ini).reduce((a, b) => a + b, 0)}">`) + field('Capacité', `<input type="number" data-k="capacity" min="0" placeholder="∞" value="${esc(n.capacity ?? '')}">`) + `</div>`;
+      if (D.edges.some(e => e.kind === 'state' && e.to === n.id && /^[+-]/.test(String(e.label).trim())))
+        h += field('Type ajouté par les modificateurs de nœud', `<select data-k="rtype">${typeOptions(n.rtype || D.resourceTypes[0].id, false)}</select>`, 'Quand une connexion d\'état +k fait gagner des ressources à ce réservoir.');
+    } else {
+      h += `<h5>Contenu</h5><div class="grid2">` + field('Ressources initiales', `<input type="number" data-k="start" data-num min="0" value="${esc(n.start ?? 0)}">`) + field('Capacité', `<input type="number" data-k="capacity" min="0" placeholder="∞" value="${esc(n.capacity ?? '')}">`) + `</div>`;
+    }
   }
   if (t === 'source' || t === 'converter') {
     if (D.resourceTypes.length > 1) h += field('Type produit (par défaut)', `<select data-k="rtype">${typeOptions(n.rtype || D.resourceTypes[0].id, false)}</select>`, 'Une connexion sortante avec un filtre de type impose son propre type.');
@@ -2436,6 +3069,29 @@ function moveInOrder(n, where) {
     D.nodes.splice(where === 'up' || where === 'first' ? j : j + 1, 0, n);
   });
 }
+const NODE_COLORS = ['#2563eb', '#0e7490', '#15803d', '#4d7c0f', '#a16207', '#c2410c', '#be123c', '#db2777', '#7c3aed', '#475569'];
+function colorField(cur, key = 'color', label = 'Couleur', multi = false, title) {
+  const m = multi ? ' data-cmulti="1"' : '';
+  return `<label class="f"><span>${label}</span><div class="swatches"><button type="button" class="swatch none${!cur ? ' on' : ''}" data-ckey="${key}" data-cval=""${m} title="${title || 'Par défaut'}">∅</button>`
+    + NODE_COLORS.map(c => `<button type="button" class="swatch${cur === c ? ' on' : ''}" data-ckey="${key}" data-cval="${c}"${m} style="background:${c}" title="${c}"></button>`).join('')
+    + `<input type="color" class="swatch-custom" data-ckey="${key}" data-cpick="1"${m} value="${cur && /^#[0-9a-f]{6}$/i.test(cur) ? cur : '#888888'}" title="Autre couleur…"></div></label>`;
+}
+function setNodeColor(ids, key, v) { mutate(() => { for (const id of ids) { const n = nodeById(id) || groupById(id); if (!n) continue; if (v) n[key] = v; else delete n[key]; } }); }
+const hasCap = n => n.capacity !== '' && n.capacity != null && !isNaN(+n.capacity) && +n.capacity >= 0;
+/* contenu initial d'un réservoir : mélange par type, ou ancien format (nombre + type) */
+function initialContents(n) {
+  const out = {}, ids = new Set(D.resourceTypes.map(t => t.id));
+  if (n.startMix && typeof n.startMix === 'object') { for (const [k, v] of Object.entries(n.startMix)) if (ids.has(k) && +v > 0) out[k] = Math.floor(+v); return out; }
+  const st = Math.max(0, Math.floor(+n.start || 0));
+  if (st) out[ids.has(n.rtype) ? n.rtype : D.resourceTypes[0].id] = st;
+  return out;
+}
+function setMix(n, typeId, v) {
+  const mix = initialContents(n);
+  v = Math.max(0, Math.floor(+v || 0));
+  if (v) mix[typeId] = v; else delete mix[typeId];
+  n.startMix = mix; n.start = Object.values(mix).reduce((a, b) => a + b, 0);
+}
 const refName = name => /^[\p{L}_][\p{L}\p{N}_]*$/u.test(String(name || '').trim()) ? String(name).trim() : '[' + String(name || '').trim() + ']';
 const footerBtns = () => `<div class="grid2" style="margin-top:16px"><button class="btn" data-act="dup" style="border-color:var(--line)">Dupliquer</button><button class="btn danger" data-act="del" style="border-color:var(--line)">Supprimer</button></div>`;
 function edgeInspector(e) {
@@ -2449,15 +3105,24 @@ function edgeInspector(e) {
   if (e.kind === 'state') {
     const chips = toN ? ['*', '!', '>0', '>=10', '<=0', '+1'] : ['+1', '-1', '+0.5', '>0'];
     h += `<div class="chips">` + chips.map(c => `<button type="button" data-chip="${esc(c)}">${esc(c)}</button>`).join('') + `</div>`;
+    if (from && from.type === 'pool' && D.resourceTypes.length > 1)
+      h += field('Valeur lue dans « ' + esc(from.name || 'le réservoir') + ' »', `<select data-k="rtype">${typeOptions(e.rtype, true, 'Toutes les ressources (total)')}</select>`, e.rtype ? 'La connexion ne compte que les ressources « ' + esc((D.resourceTypes.find(t => t.id === e.rtype) || {}).name || '') + ' » du réservoir.' : 'Choisis un type pour ne lire que cette ressource (ex. le bois d\'un réservoir qui contient aussi de l\'or).');
+    else if (from && from.type !== 'pool' && D.resourceTypes.length > 1 && !/^[*!]$/.test(String(e.label).trim()))
+      h += `<div class="desc muted" style="font-size:11.5px;margin:-2px 0 8px">Le filtre par type de ressource n'existe que pour une connexion d'état qui part d'un réservoir.</div>`;
   } else {
     const chips = from && from.type === 'gate' ? ['1', '2', '50%', '25%', '10%'] : ['1', '2', 'D6', '1..3', '50%', 'tout'];
     h += `<div class="chips">` + chips.map(c => `<button type="button" data-chip="${esc(c)}">${esc(c)}</button>`).join('') + `</div>`;
     if (D.resourceTypes.length > 1) h += field('Filtre de type', `<select data-k="rtype">${typeOptions(e.rtype, true, 'Tous types (aucun filtre)')}</select>`, 'Seules les ressources de ce type circulent ; une source ou un convertisseur produit ce type.');
   }
+  {
+    const np = (e.pts || []).length;
+    h += `<h5>Tracé</h5>` + seg('smooth', e.smooth ? 1 : 0, [[0, 'Angles durs'], [1, 'Angles souples']]);
+    h += `<div class="desc muted" style="font-size:11.5px;margin:-4px 0 8px">${np ? np + ' point' + (np > 1 ? 's' : '') + ' de passage. ' : 'Ligne droite. '}Glisse un <b>+</b> sur la ligne pour ajouter un point ; glisse un point pour le déplacer (Alt : sans grille) ; double-clic ou Alt+clic sur un point pour le supprimer.</div>`;
+    if (np) h += `<button class="btn" data-act="straight" style="border-color:var(--line);margin-bottom:6px">Redresser (supprimer ${np > 1 ? 'les ' + np + ' points' : 'le point'})</button>`;
+  }
   h += `<div class="grid2" style="margin-top:12px">`;
   if (toN && !(e.kind === 'resource' && from && from.type === 'text')) h += `<button class="btn" data-act="reverse" style="border-color:var(--line)">Inverser ⇄</button>`;
-  h += e.bend ? `<button class="btn" data-act="straight" style="border-color:var(--line)">Redresser</button>` : `<span class="muted" style="font-size:11.5px;align-self:center">Glisse la poignée pour courber</span>`;
-  h += `</div><div class="grid2" style="margin-top:8px"><span></span><button class="btn danger" data-act="del" style="border-color:var(--line)">Supprimer</button></div>`;
+  h += `<button class="btn danger" data-act="del" style="border-color:var(--line)">Supprimer</button></div>`;
   return h;
 }
 function describeEdgeShort(e) { const a = nodeById(e.from), b = nodeById(e.to); return (a ? a.name : '?') + ' → ' + (b ? b.name : '…'); }
@@ -2507,7 +3172,7 @@ function targetOf(el) {
   if (el.dataset.list) return { obj: D[el.dataset.list][+el.dataset.i], key: el.dataset.lk };
   const k = el.dataset.k || el.dataset.seg; if (!k) return null;
   if (k.startsWith('d.')) { const path = k.slice(2).split('.'); let o = D; for (let i = 0; i < path.length - 1; i++) o = o[path[i]]; return { obj: o, key: path[path.length - 1] }; }
-  const id = [...sel][0]; const obj = nodeById(id) || edgeById(id);
+  const id = [...sel][0]; const obj = nodeById(id) || edgeById(id) || groupById(id);
   return obj ? { obj, key: k } : null;
 }
 function readValue(el) {
@@ -2518,6 +3183,7 @@ function readValue(el) {
 insp.addEventListener('focusin', ev => { if (ev.target.matches('input,textarea,select')) pendingSnap = snapshot(); });
 insp.addEventListener('input', ev => {
   const el = ev.target; if (el.type === 'checkbox' || el.tagName === 'SELECT') return;
+  if (el.dataset.mix) { const n = nodeById([...sel][0]); if (!n) return; if (pendingSnap == null) pendingSnap = snapshot(); setMix(n, el.dataset.mix, el.value); render(); const tot = insp.querySelector('.mixrows + .grid2 input[disabled]'); if (tot) tot.value = n.start; scheduleSave(); return; }
   const t = targetOf(el); if (!t) return;
   if (pendingSnap == null) pendingSnap = snapshot();
   t.obj[t.key] = readValue(el);
@@ -2525,6 +3191,10 @@ insp.addEventListener('input', ev => {
 });
 insp.addEventListener('change', ev => {
   const el = ev.target;
+  if (el.dataset.mix) { const n = nodeById([...sel][0]); if (!n) return; const before = pendingSnap ?? snapshot(); pendingSnap = null; setMix(n, el.dataset.mix, el.value); if (before !== snapshot()) pushUndo(before); changed(false); return; }
+  if (el.dataset.cpick) { setNodeColor(el.dataset.cmulti ? [...sel] : [[...sel][0]], el.dataset.ckey, el.value); return; }
+  if (el.dataset.colorpick !== undefined) { const n = nodeById([...sel][0]); if (n) mutate(() => { n.color = el.value; }); return; }
+  if (el.dataset.multicolorpick !== undefined) { mutate(() => { for (const id of sel) { const n = nodeById(id); if (n) n.color = el.value; } }); return; }
   if (el.dataset.multi) { const v = el.value; if (!v) return; mutate(() => { for (const id of sel) { const n = nodeById(id); if (n && HAS_MODE.has(n.type)) n.mode = v; } }); return; }
   const t = targetOf(el); if (!t) return;
   const before = pendingSnap ?? snapshot(); pendingSnap = null;
@@ -2553,10 +3223,14 @@ insp.addEventListener('click', ev => {
   const b = ev.target.closest('button'); if (!b) return;
   if (b.dataset.seg) {
     const t = targetOf(b); if (!t) return;
-    let v = b.dataset.v; if (b.dataset.seg === 'all') v = v === '1';
+    let v = b.dataset.v; if (b.dataset.seg === 'all' || b.dataset.seg === 'smooth') v = v === '1';
     mutate(() => { t.obj[t.key] = v; });
     return;
   }
+  if (b.dataset.ckey && b.dataset.cval != null) { setNodeColor(b.dataset.cmulti ? [...sel] : [[...sel][0]], b.dataset.ckey, b.dataset.cval); return; }
+  if (b.dataset.color != null) { const n = nodeById([...sel][0]); if (n) mutate(() => { if (b.dataset.color) n.color = b.dataset.color; else delete n.color; }); return; }
+  if (b.dataset.multicolor != null) { mutate(() => { for (const id of sel) { const n = nodeById(id); if (n) { if (b.dataset.multicolor) n.color = b.dataset.multicolor; else delete n.color; } } }); return; }
+  if (b.dataset.labelpos) { const n = nodeById([...sel][0]); if (n) mutate(() => setLabelPos(n, b.dataset.labelpos)); return; }
   if (b.dataset.goto) { gotoItem(b.dataset.goto); return; }
   if (b.dataset.help) { openHelp(b.dataset.help); return; }
   if (b.dataset.chip != null) { const e = edgeById([...sel][0]); if (e) mutate(() => { e.label = b.dataset.chip; }); return; }
@@ -2565,11 +3239,15 @@ insp.addEventListener('click', ev => {
   switch (act) {
     case 'del': deleteSel(); break;
     case 'dup': { const s0 = snapshot(); duplicate([...sel]); pushUndo(s0); changed(); break; }
+    case 'group': groupSel(); break;
+    case 'ungroup': ungroupSel(); break;
+    case 'gcollapse': toggleCollapse([...sel][0]); break;
+    case 'gfit': { const g = groupById([...sel][0]); if (g) mutate(() => { fitGroup(g); growAncestors(g); }); break; }
     case 'ordFirst': case 'ordUp': case 'ordDown': case 'ordLast': { const n = nodeById([...sel][0]); if (n) moveInOrder(n, { ordFirst: 'first', ordUp: 'up', ordDown: 'down', ordLast: 'last' }[act]); break; }
-    case 'reverse': { const e = edgeById([...sel][0]); mutate(() => { [e.from, e.to] = [e.to, e.from]; if (e.bend) e.bend = { dx: -e.bend.dx, dy: -e.bend.dy }; }); break; }
-    case 'straight': { const e = edgeById([...sel][0]); mutate(() => { delete e.bend; }); break; }
+    case 'reverse': { const e = edgeById([...sel][0]); mutate(() => { [e.from, e.to] = [e.to, e.from]; if (e.pts) e.pts.reverse(); }); break; }
+    case 'straight': { const e = edgeById([...sel][0]); mutate(() => { delete e.pts; }); break; }
     case 'addType': mutate(() => { const i = D.resourceTypes.length; D.resourceTypes.push({ id: uid('t'), name: 'Type ' + (i + 1), color: PALETTE[i % PALETTE.length] }); }); break;
-    case 'delType': { const i = +b.dataset.i; const id = D.resourceTypes[i].id; mutate(() => { D.resourceTypes.splice(i, 1); D.nodes.forEach(n => { if (n.rtype === id) n.rtype = ''; }); D.edges.forEach(e => { if (e.rtype === id) e.rtype = ''; }); }); break; }
+    case 'delType': { const i = +b.dataset.i; const id = D.resourceTypes[i].id; mutate(() => { D.resourceTypes.splice(i, 1); D.nodes.forEach(n => { if (n.rtype === id) n.rtype = ''; if (n.startMix && n.startMix[id] != null) { delete n.startMix[id]; n.start = Object.values(n.startMix).reduce((a, b) => a + b, 0); } }); D.edges.forEach(e => { if (e.rtype === id) e.rtype = ''; }); }); break; }
     case 'addVar': mutate(() => D.vars.push({ name: 'var' + (D.vars.length + 1), expr: '0' })); setTimeout(() => { const els = insp.querySelectorAll('[data-list="vars"][data-lk="name"]'); const el = els[els.length - 1]; if (el) { el.focus(); el.select(); } }, 0); break;
     case 'delVar': mutate(() => D.vars.splice(+b.dataset.i, 1)); break;
     case 'alignH': case 'alignV': {
@@ -2693,6 +3371,11 @@ function renderSimInspector() {
       const tr = n.track && TRACKABLE.has(n.type);
       const reg = n.type === 'register' && n.interactive ? `<span class="stepper"><button data-reg="${n.id}" data-d="-1">−</button><button data-reg="${n.id}" data-d="1">+</button></span>` : '';
       h += `<tr><td>${tr ? `<span class="sw" style="background:${seriesColor(n.id)}"></span>` : '<span class="sw"></span>'}${esc(n.name || TYPES[n.type].label)}${n.type === 'drain' ? ' <span class="muted">(détruits)</span>' : ''}${reg}</td><td>${fmt(sim.valueOf(n.id))}</td></tr>`;
+      if (n.type === 'pool' && D.resourceTypes.length > 1) {
+        const cont = sim.poolContents(n.id), ks = D.resourceTypes.filter(t => cont[t.id] > 0);
+        if (ks.length > 1 || (ks.length === 1 && ks[0].id !== D.resourceTypes[0].id))
+          for (const t of ks) h += `<tr class="sub"><td><span class="tdot" style="background:${t.color}"></span>${esc(t.name)}</td><td style="color:${t.color}">${fmt(cont[t.id])}</td></tr>`;
+      }
     }
     h += `</table>`;
   }
@@ -2982,7 +3665,7 @@ function exportImage(kind) {
   const cs = getComputedStyle(document.documentElement);
   const vars = ['--ink', '--paper', '--node', '--accent', '--sel', '--sel-soft', '--state', '--danger', '--muted', '--sans', '--mono'].map(v => `${v}:${cs.getPropertyValue(v).trim()}`).join(';');
   const css = `svg{${vars}}` + $('#canvas-css').textContent;
-  const inner = $('#edges').outerHTML + $('#nodes').outerHTML;
+  const inner = $('#groups').outerHTML + $('#edges').outerHTML + $('#nodes').outerHTML;
   const out = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="${x} ${y} ${w} ${h}"><style>${css}</style><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${cs.getPropertyValue('--paper').trim()}"/>${inner}</svg>`;
   sel = wasSel; render();
   if (kind === 'svg') { download(fileBase() + '.svg', new Blob([out], { type: 'image/svg+xml' })); return; }
@@ -3002,7 +3685,8 @@ function fitView() {
   const r = svg.getBoundingClientRect();
   if (!D.nodes.length || !r.width) { view = { x: r.width / 2 || 0, y: r.height / 2 || 0, k: 1 }; applyView(); return; }
   const hw = n => n.type === 'text' ? noteWidth(n) / 2 + 20 : 70, hh = n => n.type === 'text' ? noteHeight(n) / 2 + 20 : 65;
-  const x0 = Math.min(...D.nodes.map(n => n.x - hw(n))), x1 = Math.max(...D.nodes.map(n => n.x + hw(n))), y0 = Math.min(...D.nodes.map(n => n.y - hh(n))), y1 = Math.max(...D.nodes.map(n => n.y + hh(n)));
+  const vis = D.nodes.filter(n => !hiddenBy(n)), rects = D.groups.filter(g => !groupHidden(g)).map(groupRect);
+  const x0 = Math.min(...vis.map(n => n.x - hw(n)), ...rects.map(r => r.x - 10)), x1 = Math.max(...vis.map(n => n.x + hw(n)), ...rects.map(r => r.x + r.w + 10)), y0 = Math.min(...vis.map(n => n.y - hh(n)), ...rects.map(r => r.y - 10)), y1 = Math.max(...vis.map(n => n.y + hh(n)), ...rects.map(r => r.y + r.h + 10));
   const k = Math.min(1.4, Math.max(.2, Math.min(r.width / (x1 - x0), r.height / (y1 - y0))));
   view = { k, x: r.width / 2 - (x0 + x1) / 2 * k, y: r.height / 2 - (y0 + y1) / 2 * k };
   applyView(); scheduleSave();
@@ -3026,8 +3710,14 @@ const docContent = $('#docContent');
   });
   $('#docNav').innerHTML = h;
 })();
+function fillDocKeys() {
+  const tb = document.getElementById('kbDocRows'); if (!tb) return;
+  let h = '';
+  for (const a of KEY_ACTIONS) h += `<tr><td>${keymap[a.id] ? esc(keyLabel(keymap[a.id])) : '<span class="muted">—</span>'}</td><td>${esc(a.label)}${keymap[a.id] !== a.def ? ' <span class="muted">(personnalisé ; par défaut : ' + (a.def ? esc(keyLabel(a.def)) : 'aucun') + ')</span>' : ''}</td></tr>`;
+  tb.innerHTML = h;
+}
 function openHelp(sec) {
-  $('#help').hidden = false;
+  $('#help').hidden = false; fillDocKeys();
   const el = sec && document.getElementById(sec.startsWith('doc-') ? sec : 'doc-' + sec);
   if (el) {
     docContent.style.scrollBehavior = 'auto';
@@ -3072,6 +3762,39 @@ $('#docSearch').addEventListener('input', ev => {
   docContent.scrollTop = 0; updateDocNav();
 });
 $('#bHelp').onclick = () => openHelp();
+$('#bKeys').onclick = () => openKeys();
+/* ---------- fenêtre de personnalisation des raccourcis ---------- */
+let keyCapture = null;
+function openKeys() { $('#keysModal').hidden = false; renderKeys(); }
+function renderKeys() {
+  let h = '', g = '';
+  for (const a of KEY_ACTIONS) {
+    if (a.group !== g) { g = a.group; h += `<tr class="kgroup"><td colspan="3">${esc(g)}</td></tr>`; }
+    const k = keymap[a.id], cap = keyCapture === a.id;
+    h += `<tr><td>${esc(a.label)}</td><td><button class="kbtn${cap ? ' capturing' : ''}${k ? '' : ' kempty'}" data-kact="${a.id}">${cap ? 'Appuie sur une touche…' : (k ? `<kbd>${esc(keyLabel(k))}</kbd>` : 'Aucun')}</button></td>`
+      + `<td>${k !== a.def ? `<button class="x" data-kreset="${a.id}" title="Revenir à ${a.def ? esc(keyLabel(a.def)) : 'aucun'}">↺</button>` : ''}${k ? `<button class="x" data-kclear="${a.id}" title="Retirer le raccourci">✕</button>` : ''}</td></tr>`;
+  }
+  $('#keysTable').innerHTML = h;
+}
+function assignKey(actId, k) {
+  const a = KEY_ACTIONS.find(x => x.id === actId);
+  if (RESERVED_KEYS.has(k)) { notify('« ' + keyLabel(k) + ' » est réservée (Échap, Suppr, flèches, Tab, modificateurs…). Choisis une autre touche.', 'error'); return false; }
+  if (k === ' ' && !SIM_ACTIONS.has(actId)) { notify('Espace est réservée au déplacement de la vue en édition : elle ne peut servir qu\'aux actions de simulation.', 'error'); return false; }
+  const other = KEY_ACTIONS.find(x => x.id !== actId && keymap[x.id] === k);
+  keymap[actId] = k;
+  if (other) { keymap[other.id] = ''; notify('« ' + keyLabel(k) + ' » était utilisée par « ' + other.label + ' » : ce raccourci est maintenant vide.', 'warn', 5000); }
+  else notify('« ' + a.label + ' » : ' + keyLabel(k));
+  saveKeymap(); renderPalette(); return true;
+}
+$('#keysModal').addEventListener('click', ev => {
+  if (ev.target.id === 'keysModal' || ev.target.closest('#keysClose')) { keyCapture = null; $('#keysModal').hidden = true; return; }
+  const b = ev.target.closest('button'); if (!b) return;
+  if (b.dataset.kact) { keyCapture = keyCapture === b.dataset.kact ? null : b.dataset.kact; renderKeys(); return; }
+  if (b.dataset.kreset) { const a = KEY_ACTIONS.find(x => x.id === b.dataset.kreset); if (a.def) assignKey(a.id, a.def); else { keymap[a.id] = ''; saveKeymap(); renderPalette(); } renderKeys(); return; }
+  if (b.dataset.kclear) { keymap[b.dataset.kclear] = ''; saveKeymap(); renderPalette(); renderKeys(); return; }
+  if (b.id === 'keysDefaults') { if (!confirm('Revenir aux raccourcis par défaut ?')) return; KEY_ACTIONS.forEach(a => keymap[a.id] = a.def); saveKeymap(); renderPalette(); renderKeys(); notify('Raccourcis par défaut rétablis'); }
+});
+docContent.addEventListener('click', ev => { if (ev.target.closest('[data-open-keys]')) { ev.preventDefault(); $('#help').hidden = true; openKeys(); } });
 $('#helpClose').onclick = () => { $('#help').hidden = true; };
 $('#help').addEventListener('click', ev => { if (ev.target.id === 'help') $('#help').hidden = true; });
 document.addEventListener('click', ev => { document.querySelectorAll('details.dd[open]').forEach(d => { if (!d.contains(ev.target)) d.open = false; }); });
@@ -3080,10 +3803,26 @@ document.addEventListener('click', ev => { document.querySelectorAll('details.dd
 document.addEventListener('keydown', ev => {
   const t = ev.target, typing = (t.tagName === 'INPUT' && !['checkbox', 'range', 'radio', 'button'].includes(t.type)) || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable;
   const mod = ev.ctrlKey || ev.metaKey;
+  if (!$('#keysModal').hidden) {
+    if (keyCapture) {
+      ev.preventDefault(); ev.stopPropagation();
+      if (ev.key === 'Escape') { keyCapture = null; renderKeys(); return; }
+      if (['Shift', 'Control', 'Alt', 'Meta', 'AltGraph'].includes(ev.key)) return;
+      if (ev.altKey && !mod) { notify('Alt seul n\'est pas utilisable : choisis une touche seule, ou une combinaison avec Ctrl / Cmd.', 'error'); return; }
+      const combo = comboFromEvent(ev);
+      if (FIXED_COMBOS.has(combo)) { notify('« ' + keyLabel(combo) + ' » est déjà utilisée par l\'application ou le navigateur (annuler, copier, enregistrer…). Choisis une autre combinaison.', 'error'); return; }
+      if (assignKey(keyCapture, combo)) keyCapture = null;
+      renderKeys(); return;
+    }
+    if (ev.key === 'Escape') $('#keysModal').hidden = true;
+    return;
+  }
   if (!$('#help').hidden) { if (ev.key === 'Escape') { if (t.id === 'docSearch' && t.value) { t.value = ''; t.dispatchEvent(new Event('input')); } else $('#help').hidden = true; } return; }
   if (mod && ev.key.toLowerCase() === 's') { ev.preventDefault(); saveJson(); return; }
   if (typing) { if (ev.key === 'Escape' || (ev.key === 'Enter' && t.tagName === 'INPUT')) t.blur(); return; }
   if (mod) {
+    const cact = actionForKey(comboFromEvent(ev));
+    if (cact) { ev.preventDefault(); runAction(cact.id); return; }
     const k = ev.key.toLowerCase();
     if (k === 'z' && !ev.shiftKey) { ev.preventDefault(); undo(); }
     else if (k === 'y' || (k === 'z' && ev.shiftKey)) { ev.preventDefault(); redo(); }
@@ -3091,26 +3830,35 @@ document.addEventListener('keydown', ev => {
     else if (k === 'v') { ev.preventDefault(); pasteClip(); }
     else if (k === 'd') { ev.preventDefault(); if (mode === 'sim') notify(SIM_LOCK, 'warn'); else if (![...sel].some(isNode)) notify('Rien à dupliquer : sélectionne d\'abord des nœuds.', 'warn'); else { const s0 = snapshot(); duplicate([...sel]); pushUndo(s0); changed(); } }
     else if (k === 'a' && mode === 'sim') { ev.preventDefault(); notify(SIM_LOCK, 'warn'); }
-    else if (k === 'a') { ev.preventDefault(); sel = new Set([...D.nodes.map(n => n.id), ...D.edges.map(e => e.id)]); render(); renderInspector(); }
+    else if (k === 'a') { ev.preventDefault(); sel = new Set([...D.nodes.filter(n => !hiddenBy(n)).map(n => n.id), ...D.edges.map(e => e.id), ...D.groups.filter(g => !groupHidden(g)).map(g => g.id)]); render(); renderInspector(); }
     return;
   }
-  if (ev.key === ' ') { ev.preventDefault(); if (mode === 'sim') { stopPlay(); doStep(); } else spaceDown = true; return; }
-  if (ev.key === 'Enter' && mode === 'sim') { ev.preventDefault(); togglePlay(); return; }
-  if (ev.key === '?') { openHelp(); return; }
   if (ev.key === 'Escape') { if (drag) { endDrag(null); render(); } setTool('select'); hint(''); if (sel.size) { sel.clear(); render(); renderInspector(); } return; }
-  if (ev.key === 'f' || ev.key === 'F') { fitView(); return; }
-  if (mode === 'sim') { if (ev.key === 'Delete' || ev.key === 'Backspace' || ev.key.startsWith('Arrow') || /^[a-z12]$/i.test(ev.key)) notify(SIM_LOCK, 'warn'); return; }
+  if (ev.altKey) return;
+  const kk = normKey(ev.key), act = actionForKey(kk);
+  const runFree = runAction;
+  if (act && GROUP_ACTIONS.has(act.id)) { ev.preventDefault(); runAction(act.id); return; }
+  if (mode === 'sim') {
+    if (act && SIM_ACTIONS.has(act.id)) { ev.preventDefault(); if (act.id === 'step') { stopPlay(); doStep(); } else if (act.id === 'play') togglePlay(); else { stopPlay(); resetSim(); render(); renderSimInspector(); renderLive(); updateSimBar(); } return; }
+    if (act && FREE_ACTIONS.has(act.id)) { ev.preventDefault(); runFree(act.id); return; }
+    if (ev.key === ' ') ev.preventDefault();
+    if (act || ev.key === 'Delete' || ev.key === 'Backspace' || ev.key.startsWith('Arrow')) notify(SIM_LOCK, 'warn');
+    return;
+  }
+  if (ev.key === ' ') { ev.preventDefault(); spaceDown = true; return; }
+  if (act && FREE_ACTIONS.has(act.id)) { ev.preventDefault(); runFree(act.id); return; }
+  if (act && SIM_ACTIONS.has(act.id)) { if (mode === 'edit') notify('« ' + act.label + ' » ne fonctionne qu\'en mode Simulation.', 'warn'); return; }
+  if (mode === 'stats' && act) { /* l'édition reste possible en mode Statistiques */ }
   if (ev.key === 'Delete' || ev.key === 'Backspace') { ev.preventDefault(); deleteSel(); return; }
   if (ev.key.startsWith('Arrow') && !sel.size) { notify('Rien à déplacer : sélectionne d\'abord des nœuds.', 'warn'); return; }
   if (ev.key.startsWith('Arrow') && sel.size) {
     ev.preventDefault(); const st = ev.shiftKey ? 50 : GRID; const dx = ev.key === 'ArrowLeft' ? -st : ev.key === 'ArrowRight' ? st : 0, dy = ev.key === 'ArrowUp' ? -st : ev.key === 'ArrowDown' ? st : 0;
-    mutate(() => { for (const id of sel) { const n = nodeById(id); if (n) { n.x += dx; n.y += dy; } } }); return;
+    mutate(() => { const cp = carriedPts(new Set([...sel].filter(isNode))); for (const id of sel) { const n = nodeById(id); if (n) { n.x += dx; n.y += dy; clampNode(n); } } for (const [eid, o] of cp) edgeById(eid).pts = o.map(q => ({ x: q.x + dx, y: q.y + dy })); }); return;
   }
-  const k = ev.key.toLowerCase();
-  if (k === 'v') return setTool('select');
-  if (k === '1') return setTool('res', true);
-  if (k === '2') return setTool('state', true);
-  for (const [type, d] of Object.entries(TYPES)) if (d.key === k) return setTool(type, ev.shiftKey);
+  if (!act) return;
+  if (act.id === 'select') return setTool('select');
+  if (act.id === 'res' || act.id === 'state') return setTool(act.id, true);
+  if (TYPES[act.id]) return setTool(act.id, ev.shiftKey);
 });
 document.addEventListener('keyup', ev => { if (ev.key === ' ') { spaceDown = false; if (ev.target.type === 'checkbox') ev.preventDefault(); } });
 window.addEventListener('resize', () => { if (mode === 'sim') renderLive(); if (mode === 'stats') renderStats(); });
